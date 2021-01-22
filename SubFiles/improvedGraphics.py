@@ -3,11 +3,9 @@ from OpenGL.GL.shaders import compileProgram, compileShader
 import shaders
 import pygame
 import pyrr
-import numpy
-import math
 import objectLoader
 from textureLoader import load_textures
-from camera import Camera
+from SubFiles.camera import Camera
 
 
 class graphic():
@@ -195,10 +193,10 @@ class graphic():
     def create_object(self):
         self.textures()
 
-        self.make_object("Objects/floor.obj", "Textures/Brick_Block.png", [0, 0, 0])
-        self.make_object("Objects/dragonlore.obj", "Textures/dragon_lore.bmp", [-6, 10, 0])
-        self.make_object("Objects/teapot.obj", "Textures/blue.jpg", [0, 0, 0])
-        self.make_object("Objects/TreasureBox.obj", "Textures/wooden_box.jpg", [10, 1, 0])
+        self.make_object("../Objects/floor.obj", "Textures/Brick_Block.png", [0, 0, 0])
+        self.make_object("../Objects/dragonlore.obj", "Textures/dragon_lore.bmp", [-6, 10, 0])
+        self.make_object("../Objects/teapot.obj", "Textures/blue.jpg", [0, 0, 0])
+        self.make_object("../Objects/TreasureBox.obj", "Textures/wooden_box.jpg", [10, 1, 0])
 
         for i in range(4):
             self.models_boolean.append(False)

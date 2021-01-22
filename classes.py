@@ -8,12 +8,7 @@ import os
 os.environ['SDL_VIDEO_WINDOW_POS'] = '400, 200'
 import pygame
 from OpenGL.GL import *
-from OpenGL.GL.shaders import compileProgram, compileShader
-import shaders
-import drawing
-import pyrr
-import improvedGraphics
-import numpy as np
+from SubFiles import improvedGraphics
 import sys
 
 

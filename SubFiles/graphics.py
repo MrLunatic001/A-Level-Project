@@ -4,11 +4,9 @@ import shaders
 import pygame
 import pyrr
 import numpy
-import math
 import objectLoader
 from textureLoader import load_textures
-from camera import Camera
-import os
+from SubFiles.camera import Camera
 
 
 class graphic():
@@ -41,9 +39,9 @@ class graphic():
         # To do len of directory
 
         load_textures("textures/wooden_box.png", self.texture[0])
-        load_textures("textures/blue.jpg", self.texture[1])
-        load_textures("textures/Brick_Block.png", self.texture[2])
-        load_textures("textures/dragon_lore.bmp", self.texture[3])
+        load_textures("../Textures/blue.jpg", self.texture[1])
+        load_textures("../Textures/Brick_Block.png", self.texture[2])
+        load_textures("../Textures/dragon_lore.bmp", self.texture[3])
 
     def projection(self):
         # Use shader
@@ -242,10 +240,10 @@ class graphic():
 
     def load_objects(self):
 
-        self.teapot_indicies, self.teapot_buffer = objectLoader.ObjLoader.load_model("Objects/teapot.obj")
-        self.floor_indicies, self.floor_buffer = objectLoader.ObjLoader.load_model("Objects/floor.obj")
+        self.teapot_indicies, self.teapot_buffer = objectLoader.ObjLoader.load_model("../Objects/teapot.obj")
+        self.floor_indicies, self.floor_buffer = objectLoader.ObjLoader.load_model("../Objects/floor.obj")
         self.cube_indicies, self.cube_buffer = objectLoader.ObjLoader.load_model("Objects/cube.obj")
-        self.lore_indicies, self.lore_buffer = objectLoader.ObjLoader.load_model("Objects/dragonlore.obj")
+        self.lore_indicies, self.lore_buffer = objectLoader.ObjLoader.load_model("../Objects/dragonlore.obj")
 
 
     def player_move(self, keys_pressed):
@@ -358,7 +356,7 @@ class graphic():
 
         self.texture = glGenTextures(1)
 
-        load_textures("textures/blue.jpg", self.texture)
+        load_textures("../Textures/blue.jpg", self.texture)
 
 
 
