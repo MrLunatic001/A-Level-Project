@@ -1,10 +1,10 @@
 from OpenGL.GL import *
 from OpenGL.GL.shaders import compileProgram, compileShader
-import shaders
+from SubFiles import shaders
 import pygame
 import pyrr
-import objectLoader
-from textureLoader import load_textures
+from SubFiles import objectLoader
+from SubFiles.textureLoader import load_textures
 from SubFiles.camera import Camera
 
 
