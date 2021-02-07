@@ -75,12 +75,28 @@ class graphic():
         for i in range(len(self.models)):
             if self.models_boolean[i]:
                 self.models_offset[i] += self.x_offset * -1
-                rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 25)
+                """Rotation
+                self.rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 25)
                 glBindVertexArray(self.VAO[i])
                 glBindTexture(GL_TEXTURE_2D, self.texture[i])
-                glUniformMatrix4fv(self.model_location, 1, GL_FALSE, rotation @ self.object_locations[i])
+                glUniformMatrix4fv(self.model_location, 1, GL_FALSE, rotation @ self.object_locations[i])"""
+
+                #Translation
+                self.rotation = pyrr.Matrix44.from_translation((self.x_offset/20, 0,0))
+                self.object_locations[i] = self.rotation @ self.object_locations[i]
+                glBindVertexArray(self.VAO[i])
+                glBindTexture(GL_TEXTURE_2D, self.texture[i])
+                glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.object_locations[i])
+
             else:
-                self.models_offset[i] = 0
+                """Rotation
+                self.rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 25)
+                glBindVertexArray(self.VAO[i])
+                glBindTexture(GL_TEXTURE_2D, self.texture[i])
+                glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.rotation @ self.object_locations[i])"""
+
+                #Translation
+
                 glBindVertexArray(self.VAO[i])
                 glBindTexture(GL_TEXTURE_2D, self.texture[i])
                 glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.object_locations[i])
@@ -96,11 +112,25 @@ class graphic():
         # Draw
         for i in range(len(self.models)):
             if self.models_boolean[i]:
-                rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 10)
+                """Rotation:
+                self.rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 25)
                 glBindVertexArray(self.VAO[i])
                 glUniform3iv(self.icolor_loc, 1, self.pick_colours[i])
-                glUniformMatrix4fv(self.model_location, 1, GL_FALSE, rotation @ self.object_locations[i])
+                glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.rotation @ self.object_locations[i])"""
+
+                #Translation:
+                self.rotation = pyrr.Matrix44.from_translation((self.x_offset / 20, 0, 0))
+                glBindVertexArray(self.VAO[i])
+                glUniform3iv(self.icolor_loc, 1, self.pick_colours[i])
+                glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.rotation @ self.object_locations[i])
             else:
+                """Rotation:
+                self.rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 25)
+                glBindVertexArray(self.VAO[i])
+                glUniform3iv(self.icolor_loc, 1, self.pick_colours[i])
+                glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.rotation @ self.object_locations[i])
+                """
+                # Translation
                 glBindVertexArray(self.VAO[i])
                 glUniform3iv(self.icolor_loc, 1, self.pick_colours[i])
                 glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.object_locations[i])
