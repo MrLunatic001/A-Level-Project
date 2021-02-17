@@ -85,8 +85,7 @@ class game:
                     done = True
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     w, h = pygame.display.get_surface().get_size()
-
-                    self.pausemenu(w, h)
+                    self.pausemenu(w, h, self.new_graphic_settings.get_state())
 
             self.new_graphic_settings.mouse_move()
 
@@ -111,7 +110,7 @@ class game:
         # Ends pygame
         pygame.quit()
 
-    def pausemenu(self, width, height):
+    def pausemenu(self, width, height, obj_loc):
 
         done = False
         # Set the width and height of the screen [width, height]
@@ -201,7 +200,12 @@ class game:
         self.screen = pygame.display.set_mode((self.width, self.height), pygame.OPENGL | pygame.DOUBLEBUF)
         self.new_graphic_settings = improvedGraphics.graphic(self.width, self.height)
 
+        # Return back to saved state
+        self.new_graphic_settings.object_locations = obj_loc[0]
+        self.new_graphic_settings.models_offset = obj_loc[1]
+
         self.new_graphic_settings.window_resize(self.width, self.height)
+
 
 
 """

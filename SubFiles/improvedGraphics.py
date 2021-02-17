@@ -28,6 +28,7 @@ class graphic():
         self.initalise_buffers()
         self.projection()
 
+
     def initialise_camera(self):
         self.cam = Camera()
         self.lastX, self.lastY = self.width / 2, self.height / 2
@@ -73,32 +74,28 @@ class graphic():
 
         # Draw
         for i in range(len(self.models)):
+
+            glBindVertexArray(self.VAO[i])
+            glBindTexture(GL_TEXTURE_2D, self.texture[i])
+
             if self.models_boolean[i]:
                 self.models_offset[i] += self.x_offset * -1
                 """Rotation
                 self.rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 25)
-                glBindVertexArray(self.VAO[i])
-                glBindTexture(GL_TEXTURE_2D, self.texture[i])
                 glUniformMatrix4fv(self.model_location, 1, GL_FALSE, rotation @ self.object_locations[i])"""
 
                 #Translation
                 self.rotation = pyrr.Matrix44.from_translation((self.x_offset/20, 0,0))
                 self.object_locations[i] = self.rotation @ self.object_locations[i]
-                glBindVertexArray(self.VAO[i])
-                glBindTexture(GL_TEXTURE_2D, self.texture[i])
+
                 glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.object_locations[i])
 
             else:
                 """Rotation
                 self.rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 25)
-                glBindVertexArray(self.VAO[i])
-                glBindTexture(GL_TEXTURE_2D, self.texture[i])
                 glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.rotation @ self.object_locations[i])"""
 
                 #Translation
-
-                glBindVertexArray(self.VAO[i])
-                glBindTexture(GL_TEXTURE_2D, self.texture[i])
                 glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.object_locations[i])
 
             glDrawArrays(GL_TRIANGLES, 0, len(self.models[i][0]))
@@ -111,28 +108,25 @@ class graphic():
 
         # Draw
         for i in range(len(self.models)):
+
+            glBindVertexArray(self.VAO[i])
+            glUniform3iv(self.icolor_loc, 1, self.pick_colours[i])
+
             if self.models_boolean[i]:
                 """Rotation:
                 self.rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 25)
-                glBindVertexArray(self.VAO[i])
-                glUniform3iv(self.icolor_loc, 1, self.pick_colours[i])
                 glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.rotation @ self.object_locations[i])"""
 
                 #Translation:
                 self.rotation = pyrr.Matrix44.from_translation((self.x_offset / 20, 0, 0))
-                glBindVertexArray(self.VAO[i])
-                glUniform3iv(self.icolor_loc, 1, self.pick_colours[i])
+
                 glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.rotation @ self.object_locations[i])
             else:
                 """Rotation:
                 self.rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 25)
-                glBindVertexArray(self.VAO[i])
-                glUniform3iv(self.icolor_loc, 1, self.pick_colours[i])
                 glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.rotation @ self.object_locations[i])
                 """
                 # Translation
-                glBindVertexArray(self.VAO[i])
-                glUniform3iv(self.icolor_loc, 1, self.pick_colours[i])
                 glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.object_locations[i])
             glDrawArrays(GL_TRIANGLES, 0, len(self.models[i][0]))
 
@@ -261,3 +255,6 @@ class graphic():
     def change_dimensions(self, width, height):
         self.width = width
         self.height = height
+
+    def get_state (self):
+        return self.object_locations, self.models_offset
