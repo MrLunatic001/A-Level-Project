@@ -110,7 +110,7 @@ class game:
         # Ends pygame
         pygame.quit()
 
-    def pausemenu(self, width, height, obj_loc):
+    def pausemenu(self, width, height, state):
 
         done = False
         # Set the width and height of the screen [width, height]
@@ -201,8 +201,9 @@ class game:
         self.new_graphic_settings = improvedGraphics.graphic(self.width, self.height)
 
         # Return back to saved state
-        self.new_graphic_settings.object_locations = obj_loc[0]
-        self.new_graphic_settings.models_offset = obj_loc[1]
+        self.new_graphic_settings.object_locations = state[0]
+        self.new_graphic_settings.models_offset = state[1]
+        self.new_graphic_settings.models_maxoffset = state[2]
 
         self.new_graphic_settings.window_resize(self.width, self.height)
 

@@ -18,6 +18,7 @@ class graphic():
         self.models_boolean = []
         self.object_locations = []
         self.models_offset = [0, 0, 0, 0]
+        self.models_maxoffset = [0,0,0,0]
         self.object_counter = 0
         self.mouse_counter = 0
 
@@ -59,6 +60,7 @@ class graphic():
         self.view_loc = glGetUniformLocation(self.shader, "view")
         self.icolor_loc = glGetUniformLocation(self.shader, "icolor")
         self.switcher_loc = glGetUniformLocation(self.shader, "switcher")
+        #self.light_loc = glGetUniformLocation(self.shader, "light")
 
         glUniformMatrix4fv(self.projection_location, 1, GL_FALSE, projection)
 
@@ -79,16 +81,24 @@ class graphic():
             glBindTexture(GL_TEXTURE_2D, self.texture[i])
 
             if self.models_boolean[i]:
-                self.models_offset[i] += self.x_offset * -1
+
+                if self.models_maxoffset[i] > -100:
+                    self.models_maxoffset[i] += self.x_offset * -1
+                    self.models_offset[i] += self.x_offset * -1
+                    # Translation
+                    self.rotation = pyrr.Matrix44.from_translation((self.x_offset / 20, 0, 0))
+                    self.object_locations[i] = self.rotation @ self.object_locations[i]
+
+                    print(self.models_maxoffset[i])
+
                 """Rotation
                 self.rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 25)
                 glUniformMatrix4fv(self.model_location, 1, GL_FALSE, rotation @ self.object_locations[i])"""
 
-                #Translation
-                self.rotation = pyrr.Matrix44.from_translation((self.x_offset/20, 0,0))
-                self.object_locations[i] = self.rotation @ self.object_locations[i]
+
 
                 glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.object_locations[i])
+                #glUniformMatrix4fv(self.light_loc, 1, GL_FALSE, self.object_locations[i])
 
             else:
                 """Rotation
@@ -97,6 +107,7 @@ class graphic():
 
                 #Translation
                 glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.object_locations[i])
+                #glUniformMatrix4fv(self.light_loc, 1, GL_FALSE, self.object_locations[i])
 
             glDrawArrays(GL_TRIANGLES, 0, len(self.models[i][0]))
 
@@ -118,9 +129,12 @@ class graphic():
                 glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.rotation @ self.object_locations[i])"""
 
                 #Translation:
-                self.rotation = pyrr.Matrix44.from_translation((self.x_offset / 20, 0, 0))
 
-                glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.rotation @ self.object_locations[i])
+
+
+                glUniformMatrix4fv(self.model_location, 1, GL_FALSE,  self.object_locations[i])
+
+
             else:
                 """Rotation:
                 self.rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 25)
@@ -154,6 +168,11 @@ class graphic():
             # Layer 2 (Texture)
             glEnableVertexAttribArray(1)
             glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, self.models[i][1].itemsize * 8, ctypes.c_void_p(12))
+
+            # Layer 3 (Normal)
+
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, self.models[i][1].itemsize * 8, ctypes.c_void_p(20))
+            glEnableVertexAttribArray(2)
 
     def window_resize(self, width, height):
         self.width = width
@@ -251,10 +270,12 @@ class graphic():
             self.models_boolean[2] = not self.models_boolean[2]
         elif colour[2] == 0:
             self.models_boolean[3] = not self.models_boolean[3]
+        else:
+            print(colour)
 
     def change_dimensions(self, width, height):
         self.width = width
         self.height = height
 
     def get_state (self):
-        return self.object_locations, self.models_offset
+        return self.object_locations, self.models_offset, self.models_maxoffset
