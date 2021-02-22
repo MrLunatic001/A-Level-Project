@@ -1,5 +1,6 @@
 from pyrr import Vector3, vector, vector3, matrix44
 from math import sin, cos, radians
+import copy
 
 class Camera:
     def __init__(self):
@@ -36,9 +37,11 @@ class Camera:
         front.y = sin(radians(self.pitch))
         front.z = sin(radians(self.jaw)) * cos(radians(self.pitch))
 
+
         move = Vector3([0.0, 0.0, 0.0])
         move.x = cos(radians(self.jaw)) * cos(radians(self.pitch))
         move.z = sin(radians(self.jaw)) * cos(radians(self.pitch))
+
 
         self.camera_move = vector.normalise(move)
         self.camera_front = vector.normalise(front)
@@ -47,11 +50,25 @@ class Camera:
 
     # Camera method for the WASD movement
     def process_keyboard(self, direction, velocity):
+        future_pos = copy.deepcopy(self.camera_pos)
         if direction == "FORWARD":
-            self.camera_pos += self.camera_move * velocity
+            future_pos += self.camera_move * velocity
         if direction == "BACKWARD":
-            self.camera_pos -= self.camera_move * velocity
+            future_pos -= self.camera_move * velocity
         if direction == "LEFT":
-            self.camera_pos -= self.camera_right * velocity
+            future_pos -= self.camera_right * velocity
         if direction == "RIGHT":
-            self.camera_pos += self.camera_right * velocity
+            future_pos += self.camera_right * velocity
+
+        print(future_pos[0], future_pos[2])
+
+        if 18.9 >= future_pos[0] >= -15 and 29.8 >= future_pos[2] >= -5.525:
+            if direction == "FORWARD":
+                self.camera_pos += self.camera_move * velocity
+            if direction == "BACKWARD":
+                self.camera_pos -= self.camera_move * velocity
+            if direction == "LEFT":
+                self.camera_pos -= self.camera_right * velocity
+            if direction == "RIGHT":
+                self.camera_pos += self.camera_right * velocity
+

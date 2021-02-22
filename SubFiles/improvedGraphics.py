@@ -17,8 +17,8 @@ class graphic():
         self.models = []
         self.models_boolean = []
         self.object_locations = []
-        self.models_offset = [0, 0, 0, 0]
-        self.models_maxoffset = [0,0,0,0]
+        self.models_offset = [0, 0, 0, 0, 0, 0, 0, 0,0,0,0]
+        self.models_maxoffset = [0,0,0,0, 0, 0, 0, 0,0,0,0]
         self.object_counter = 0
         self.mouse_counter = 0
 
@@ -35,9 +35,8 @@ class graphic():
         self.lastX, self.lastY = self.width / 2, self.height / 2
         self.first_mouse = True
 
-    def textures(self):
 
-        self.texture = glGenTextures(4)
+
 
     def projection(self):
         # Use shader
@@ -118,7 +117,7 @@ class graphic():
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         # Draw
-        for i in range(len(self.models)):
+        for i in range(4):
 
             glBindVertexArray(self.VAO[i])
             glUniform3iv(self.icolor_loc, 1, self.pick_colours[i])
@@ -183,13 +182,13 @@ class graphic():
 
     def player_move(self, keys_pressed):
         if keys_pressed[pygame.K_w]:
-            self.cam.process_keyboard("FORWARD", 1)
+            self.cam.process_keyboard("FORWARD", 0.5)
         if keys_pressed[pygame.K_a]:
-            self.cam.process_keyboard("LEFT", 1)
+            self.cam.process_keyboard("LEFT", 0.5)
         if keys_pressed[pygame.K_s]:
-            self.cam.process_keyboard("BACKWARD", 1)
+            self.cam.process_keyboard("BACKWARD", 0.5)
         if keys_pressed[pygame.K_d]:
-            self.cam.process_keyboard("RIGHT", 1)
+            self.cam.process_keyboard("RIGHT", 0.5)
 
         # Move camera
         self.view = self.cam.get_view_matrix()
@@ -234,14 +233,22 @@ class graphic():
         self.object_locations.append(pyrr.matrix44.create_from_translation(pyrr.Vector3(position)))
 
     def create_object(self):
-        self.textures()
+        self.texture = glGenTextures(11)
 
-        self.make_object("Objects/floor.obj", "Textures/Brick_Block.png", [0, 0, 0])
+        self.make_object("Objects/Room.obj", "Textures/table.jpg", [0, 8, 50])
         self.make_object("Objects/dragonlore.obj", "Textures/dragon_lore.bmp", [-6, 10, 0])
         self.make_object("Objects/teapot.obj", "Textures/blue.jpg", [0, 0, 0])
         self.make_object("Objects/TreasureBox.obj", "Textures/wooden_box.jpg", [10, 1, 0])
+        self.make_object("Objects/floor.obj", "Textures/Brick_Block.png", [2, -1, 10])
+        self.make_object("Objects/Table.obj", "Textures/wallpaper.jpg", [11, -25, 35])
+        self.make_object("Objects/hammer.obj", "Textures/ocean.png", [11, -25, 35])
+        self.make_object("Objects/box_bottom.obj", "Textures/box.jpg", [11, -25, 35])
+        self.make_object("Objects/box_upper.obj", "Textures/box.jpg", [11, -25, 35])
+        self.make_object("Objects/lock.obj", "Textures/lock.jpg", [11, -25, 35])
+        self.make_object("Objects/flap.obj", "Textures/flap.jpg", [11, -25, 34.99])
 
-        for i in range(4):
+
+        for i in range(11):
             self.models_boolean.append(False)
             self.models_offset[i] = 0
 

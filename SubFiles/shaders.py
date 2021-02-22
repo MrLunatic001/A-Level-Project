@@ -40,33 +40,32 @@ uniform ivec3 icolor;
 uniform sampler2D s_texture;
 
 void main()
-{
-    if(switcher == 0){
-        out_color = texture(s_texture, v_texture);
-    }else{
-        out_color = vec4(icolor.r/255.0, icolor.g/255.0, icolor.b/255.0, 1.0);
+    {
+    
+        if(switcher == 0){
+            out_color = texture(s_texture, v_texture);
+        }else{
+            out_color = vec4(icolor.r/255.0, icolor.g/255.0, icolor.b/255.0, 1.0);
+            }
+    
     }
-    
-    
-    
-}
 """
 
 
 """
     vec3 ambientLightIntensity = vec3(0.3f, 0.2f, 0.4f);
     vec3 sunLightIntensity = vec3(0.9f, 0.9f, 0.9f);
-    vec3 sunLightDirection = normalize(vec3(1.0f, 2.0f, 1.0f));
-    
+    vec3 sunLightDirection = normalize(vec3(1.0f, -6.0f, 1.0f));
     vec4 texel = texture(s_texture, v_texture);
     vec4 ctexel = vec4(icolor.r/255.0, icolor.g/255.0, icolor.b/255.0, 1.0);   
     vec3 lightIntensity = ambientLightIntensity + sunLightIntensity * max(dot(v_normal, sunLightDirection), 0.0f);
-    
     if (switcher == 0){
         out_color = vec4(texel.rgb * lightIntensity, texel.a);
-
-        
     }
-    else if (switcher == 1){
-        out_color = vec4(ctexel.rgb * lightIntensity, texel.a);
+    else{
+        out_color = vec4(ctexel.rgb * lightIntensity, ctexel.a);
+    }
+    
+    
+    
 """
