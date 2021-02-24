@@ -60,8 +60,6 @@ class Camera:
         if direction == "RIGHT":
             future_pos += self.camera_right * velocity
 
-        print(future_pos[0], future_pos[2])
-
         if 18.9 >= future_pos[0] >= -15 and 29.8 >= future_pos[2] >= -5.525:
             if direction == "FORWARD":
                 self.camera_pos += self.camera_move * velocity

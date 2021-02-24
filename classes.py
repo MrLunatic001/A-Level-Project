@@ -87,6 +87,8 @@ class game:
                     w, h = pygame.display.get_surface().get_size()
                     self.pausemenu(w, h, self.new_graphic_settings.get_state())
 
+
+
             self.new_graphic_settings.mouse_move()
 
             keys_pressed = pygame.key.get_pressed()
@@ -204,8 +206,21 @@ class game:
         self.new_graphic_settings.object_locations = state[0]
         self.new_graphic_settings.models_offset = state[1]
         self.new_graphic_settings.models_maxoffset = state[2]
+        self.new_graphic_settings.models = state[3]
+        self.new_graphic_settings.cam.camera_pos = state[4]
+        self.new_graphic_settings.cam.camera_up = state[5]
+        self.new_graphic_settings.cam.camera_front = state[6]
+        self.new_graphic_settings.cam.camera_right = state[7]
+        self.new_graphic_settings.cam.jaw = state[8]
+        self.new_graphic_settings.cam.pitch = state[9]
+
+
 
         self.new_graphic_settings.window_resize(self.width, self.height)
+
+
+
+
 
 
 
