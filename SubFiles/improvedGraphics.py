@@ -10,17 +10,21 @@ from SubFiles.camera import Camera
 
 class graphic():
 
-    def __init__(self, width, height):
+    def __init__(self, width, height, choice):
         self.width = width
         self.height = height
         self.first_mouse = True
         self.models = []
+        self.inventory_models = []
+        self.inventory_choice = choice
         self.models_boolean = []
         self.object_locations = []
-        self.models_offset = []
-        self.models_maxoffset = []
+        self.models_offset = [0,0,0]
+        self.models_maxoffset = [0,0,10, 40]
         self.object_counter = 0
         self.mouse_counter = 0
+        self.inventory = [0, 0, 0]
+        self.pick_boolean = [True, False, False, False]
 
         # Boot up the graphic procedures
         self.compile_shader()
@@ -47,9 +51,8 @@ class graphic():
         # Perpective projection
         projection = pyrr.matrix44.create_perspective_projection_matrix(45, self.width / self.height, 0.1, 100)
 
-
         # Pick_colours
-        self.pick_colours = [(255, 0, 0)]
+        self.pick_colours = [(255, 0, 0), (244,0,0), (233,0,0), (222,0,0)]
 
         # Get locations
         self.model_location = glGetUniformLocation(self.shader, "model")
@@ -91,11 +94,44 @@ class graphic():
                     print(self.models_maxoffset[i])"""
 
                 """Rotation
+                self.models_offset[i] += self.y_offset * -1
                 self.rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 25)
                 glUniformMatrix4fv(self.model_location, 1, GL_FALSE, rotation @ self.object_locations[i])"""
-
+                # Make hammer disappear
                 if i == 0:
                     self.models[i] = (None, None)
+                    self.models_boolean[i] = False
+                # Make lock disappear
+                elif i == 1:
+                    self.models[i] = (None, None)
+                    self.models_boolean[i] = False
+                # Lift flap
+                elif i == 2:
+                    if self.y_offset >= 0:
+                        if self.models_offset[i] <= self.models_maxoffset[i]:
+                            print(self.models_offset[i])
+                            self.models_offset[i] += self.y_offset * 1
+                            self.rotation = pyrr.Matrix44.from_x_rotation(self.y_offset / 700)
+                            self.object_locations[i] = self.object_locations[i] @ self.rotation
+                        else:
+                            self.models_boolean[i] = False
+                            self.pick_boolean[i] = False
+                            self.pick_boolean[3] = True
+                # Lift upperbox
+                elif i == 3:
+                    if self.x_offset >= 0:
+                        if self.models_offset[i] <= self.models_maxoffset[i]:
+                            print(self.models_offset[i])
+                            self.models_offset[i] += self.x_offset * 1
+                            self.rotation = pyrr.Matrix44.from_z_rotation(self.x_offset * -1 / 100)
+                            # Move flap as well
+                            self.object_locations[2] = self.object_locations[2] @ self.rotation
+                            self.object_locations[i] = self.object_locations[i] @ self.rotation
+                        else:
+                            self.models_boolean[i] = False
+                            self.pick_boolean[i] = False
+
+
 
                 if self.models[i][0] is not None:
                     glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.object_locations[i])
@@ -113,6 +149,9 @@ class graphic():
             if self.models[i][0] is not None:
                 glDrawArrays(GL_TRIANGLES, 0, len(self.models[i][0]))
 
+
+
+
         # Picker frame buffer
         glUniform1i(self.switcher_loc, 1)
         glBindFramebuffer(GL_FRAMEBUFFER, self.FBO)
@@ -120,32 +159,32 @@ class graphic():
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         # Draw
-        for i in range(1):
+        for i in range(len(self.pick_colours)):
+            if self.pick_boolean[i]:
+                glBindVertexArray(self.VAO[i])
+                glUniform3iv(self.icolor_loc, 1, self.pick_colours[i])
 
-            glBindVertexArray(self.VAO[i])
-            glUniform3iv(self.icolor_loc, 1, self.pick_colours[i])
+                if self.models_boolean[i]:
+                    """Rotation:
+                    self.rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 25)
+                    glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.rotation @ self.object_locations[i])"""
 
-            if self.models_boolean[i]:
-                """Rotation:
-                self.rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 25)
-                glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.rotation @ self.object_locations[i])"""
+                    # Translation:
 
-                # Translation:
+                    if self.models[i][0] is not None:
+                        glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.object_locations[i])
 
+
+                else:
+                    """Rotation:
+                    self.rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 25)
+                    glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.rotation @ self.object_locations[i])
+                    """
+                    # Translation
+                    if self.models[i][0] is not None:
+                        glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.object_locations[i])
                 if self.models[i][0] is not None:
-                    glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.object_locations[i])
-
-
-            else:
-                """Rotation:
-                self.rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 25)
-                glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.rotation @ self.object_locations[i])
-                """
-                # Translation
-                if self.models[i][0] is not None:
-                    glUniformMatrix4fv(self.model_location, 1, GL_FALSE, self.object_locations[i])
-            if self.models[i][0] is not None:
-                glDrawArrays(GL_TRIANGLES, 0, len(self.models[i][0]))
+                    glDrawArrays(GL_TRIANGLES, 0, len(self.models[i][0]))
 
     def compile_shader(self):
         # Compile shaders
@@ -197,13 +236,8 @@ class graphic():
 
         # Move camera
 
-
         self.view = self.cam.get_view_matrix()
         glUniformMatrix4fv(self.view_loc, 1, GL_FALSE, self.view)
-
-
-
-
 
     def mouse_move(self):
 
@@ -240,13 +274,16 @@ class graphic():
         self.texture = glGenTextures(8)
 
         self.make_object("Objects/hammer.obj", "Textures/ocean.png", [11, -25, 35])
+        self.make_object("Objects/lock.obj", "Textures/lock.jpg", [11, -25, 35])
+        self.make_object("Objects/flap.obj", "Textures/flap.jpg", [11, -25, 34.99])
+        self.make_object("Objects/box_upper.obj", "Textures/box.jpg", [11, -25, 35])
         self.make_object("Objects/Room.obj", "Textures/table.jpg", [0, 8, 50])
         self.make_object("Objects/floor.obj", "Textures/Brick_Block.png", [2, -1, 10])
         self.make_object("Objects/Table.obj", "Textures/wallpaper.jpg", [11, -25, 35])
         self.make_object("Objects/box_bottom.obj", "Textures/box.jpg", [11, -25, 35])
-        self.make_object("Objects/box_upper.obj", "Textures/box.jpg", [11, -25, 35])
-        self.make_object("Objects/lock.obj", "Textures/lock.jpg", [11, -25, 35])
-        self.make_object("Objects/flap.obj", "Textures/flap.jpg", [11, -25, 34.99])
+
+
+
 
         for i in range(8):
             self.models_boolean.append(False)
@@ -266,13 +303,36 @@ class graphic():
 
     def pick(self, mouse_x, mouse_y):
         colour = glReadPixels(mouse_x, mouse_y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE)
+
+        # If clicked on hammer
         if colour[0] == 255:
             print("hammer")
             self.models_boolean[0] = not self.models_boolean[0]
+            self.inventory[0] = 1
+            self.pick_boolean[1] = True
+
+        # If inventory is hammer and clicked on lock:
+        elif colour[0] == 244:
+            print("lock")
+            if self.inventory[self.inventory_choice] == 1:
+                self.models_boolean[1] = not self.models_boolean[1]
+                self.pick_boolean[2] = True
+        # If flap is being lifted:
+        elif colour[0] == 233:
+            print("flap")
+            if self.inventory[self.inventory_choice] == 0:
+                self.models_boolean[2] = not self.models_boolean[2]
+
+        elif colour[0] == 222:
+            print("upper box")
+            if self.inventory[self.inventory_choice] == 0:
+                self.models_boolean[3] = not self.models_boolean[3]
 
     def change_dimensions(self, width, height):
         self.width = width
         self.height = height
 
     def get_state(self):
-        return self.object_locations, self.models_offset, self.models_maxoffset, self.models, self.cam.camera_pos, self.cam.camera_up, self.cam.camera_front, self.cam.camera_right, self.cam.jaw, self.cam.pitch
+        return self.object_locations, self.models_offset, self.models_maxoffset, self.models, self.cam.camera_pos, \
+               self.cam.camera_up, self.cam.camera_front, self.cam.camera_right, self.cam.jaw, self.cam.pitch, self.inventory, \
+                self.pick_boolean

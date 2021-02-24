@@ -1,1 +1,5 @@
-hammer 1 RED
+item number colour
+hammer 1 255
+lock   2 244
+flap   3 233
+upper box 4 222

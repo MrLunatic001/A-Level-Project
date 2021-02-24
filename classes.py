@@ -1,6 +1,4 @@
 # Run this file to run the game
-# Movement controls are the following: WASD (W for forward A for left, S for backwards, D for right)
-# Escape to control your cursor
 # Use the mouse to look around. Click on the objects to rotate them.
 import os
 
@@ -63,8 +61,8 @@ class game:
         pygame.display.set_caption(title)
         self.width = width
         self.height = height
-
-        self.new_graphic_settings = improvedGraphics.graphic(width, height)
+        self.inventory_choice = 0
+        self.new_graphic_settings = improvedGraphics.graphic(width, height, self.inventory_choice)
 
         self.clock = pygame.time.Clock()
 
@@ -86,8 +84,9 @@ class game:
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     w, h = pygame.display.get_surface().get_size()
                     self.pausemenu(w, h, self.new_graphic_settings.get_state())
-
-
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_i:
+                    w, h = pygame.display.get_surface().get_size()
+                    self.inventory(w, h, self.new_graphic_settings.get_state())
 
             self.new_graphic_settings.mouse_move()
 
@@ -120,7 +119,7 @@ class game:
         self.screen = pygame.display.set_mode(size, pygame.RESIZABLE)
         pygame.display.set_caption("Welcome!")
         font = pygame.font.SysFont('Calibri', 50, False, False)
-        settings_button = button((200, 200, 0), width / 2 * 0.8, height / 2 * 0.6, 250, 75, "Settings")
+
         help_button = button((200, 200, 0), width / 2 * 0.8, height / 2 * 0.9, 250, 75, "Help")
         back_button = button((200, 200, 0), width / 2 * 0.8, height / 2 * 1.2, 250, 75, "Back")
 
@@ -132,9 +131,7 @@ class game:
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_position = pygame.mouse.get_pos()
-                    if settings_button.isOver(mouse_position):
-                        settings_button.color = (255, 255, 0)
-                    elif back_button.isOver(mouse_position):
+                    if back_button.isOver(mouse_position):
                         back_button.color = (255, 255, 0)
                     elif help_button.isOver(mouse_position):
                         help_button.color = (255, 255, 0)
@@ -155,17 +152,7 @@ class game:
                                              "Help")
                         back_button = button((200, 200, 0), self.width / 2 * 0.8, self.height / 2 * 1.2, 250, 75,
                                              "Back")
-                        screen = pygame.display.set_mode(size, pygame.RESIZABLE)
-
-                    elif settings_button.isOver(mouse_position):
-                        self.width, self.height = settings_page(self.width, self.height)
-                        settings_button = button((200, 200, 0), self.width / 2 * 0.8, self.height / 2 * 0.6, 250, 75,
-                                                 "Settings")
-                        help_button = button((200, 200, 0), self.width / 2 * 0.8, self.height / 2 * 0.9, 250, 75,
-                                             "Help")
-                        back_button = button((200, 200, 0), self.width / 2 * 0.8, self.height / 2 * 1.2, 250, 75,
-                                             "Back")
-                        screen = pygame.display.set_mode(size, pygame.RESIZABLE)
+                        pygame.display.set_mode(size, pygame.RESIZABLE)
 
                 if event.type == pygame.VIDEORESIZE:
                     # Resizes window
@@ -177,8 +164,6 @@ class game:
                         self.width = event.w
                         self.height = event.h
 
-                    settings_button = button((200, 200, 0), self.width / 2 * 0.8, self.height / 2 * 0.6, 250, 75,
-                                             "Settings")
                     help_button = button((200, 200, 0), self.width / 2 * 0.8, self.height / 2 * 0.9, 250, 75, "Help")
                     back_button = button((200, 200, 0), self.width / 2 * 0.8, self.height / 2 * 1.2, 250, 75, "Back")
 
@@ -192,15 +177,89 @@ class game:
             welcome_message = font.render("The game is paused", True, (255, 255, 255))
             self.screen.blit(welcome_message, [self.width / 2 * 0.7, self.height / 5])
 
-            settings_button.draw(self.screen)
             help_button.draw(self.screen)
             back_button.draw(self.screen)
 
             # --- Go ahead and update the screen with what we've drawn.
             pygame.display.flip()
 
+        self.save_state(state)
+
+    def inventory(self, width, height, state):
+        inventory = state[10]
+        font = pygame.font.SysFont('Calibri', 50, False, False)
+        size = (width, height)
+        WHITE = (255, 255, 255)
+        screen = pygame.display.set_mode(size)
+        welcome_message = font.render("Inventory", True, WHITE)
+        slot_one = font.render("1", True, WHITE)
+        slot_two = font.render("2", True, WHITE)
+        slot_three = font.render("3", True, WHITE)
+        location = [[width / 2 * 0.45, height / 2], [width / 2 * 0.95, height / 2], [width / 2 * 1.45, height / 2]]
+        hammer = pygame.transform.scale(pygame.image.load('Textures/hammer.png'), (95, 95))
+        empty = pygame.transform.scale(pygame.image.load('Textures/empty.png'), (95, 95))
+
+        rect_pos = [width / 2 * 0.45, height / 2]
+
+        back_button = button((200, 200, 0), width / 2 * 0.8, height / 2 * 1.4, 250, 75, "Back")
+        done = False
+
+        while not done:
+            # --- Main event loop
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_position = pygame.mouse.get_pos()
+                    if back_button.isOver(mouse_position):
+                        back_button.color = (255, 255, 0)
+                if event.type == pygame.MOUSEBUTTONUP:
+                    mouse_position = pygame.mouse.get_pos()
+                    if back_button.isOver(mouse_position):
+                        done = True
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_1:
+                        rect_pos = [width / 2 * 0.45, height / 2]
+                        self.inventory_choice = 0
+                    elif event.key == pygame.K_2:
+                        rect_pos = [width / 2 * 0.95, height / 2]
+                        self.inventory_choice = 1
+                    elif event.key == pygame.K_3:
+                        rect_pos = [width / 2 * 1.45, height / 2]
+                        self.inventory_choice = 2
+
+            # --- Game logic should go here
+
+            # Background Colour
+
+            screen.fill((100, 100, 100))
+
+            pygame.draw.rect(screen, (0, 255, 0),
+                             (location[self.inventory_choice][0], location[self.inventory_choice][1], 101, 101), 0)
+            pygame.draw.rect(screen, (100, 100, 100),
+                             (location[self.inventory_choice][0], location[self.inventory_choice][1], 99, 99), 0)
+
+            for i in range(3):
+                if inventory[i] == 0:
+                    screen.blit(empty, location[i])
+                elif inventory[i] == 1:
+                    screen.blit(hammer, location[i])
+
+            screen.blit(welcome_message, [width / 2 * 0.9, height / 2 * 0.5])
+            screen.blit(slot_one, [width / 2 * 0.5, height / 2 * 0.7])
+            screen.blit(slot_two, [width / 2, height / 2 * 0.7])
+            screen.blit(slot_three, [width / 2 * 1.5, height / 2 * 0.7])
+
+            back_button.draw(screen)
+
+            # --- Go ahead and update the screen with what we've drawn.
+            pygame.display.flip()
+
+        self.save_state(state)
+
+    def save_state(self, state):
         self.screen = pygame.display.set_mode((self.width, self.height), pygame.OPENGL | pygame.DOUBLEBUF)
-        self.new_graphic_settings = improvedGraphics.graphic(self.width, self.height)
+        self.new_graphic_settings = improvedGraphics.graphic(self.width, self.height, self.inventory_choice)
 
         # Return back to saved state
         self.new_graphic_settings.object_locations = state[0]
@@ -213,54 +272,10 @@ class game:
         self.new_graphic_settings.cam.camera_right = state[7]
         self.new_graphic_settings.cam.jaw = state[8]
         self.new_graphic_settings.cam.pitch = state[9]
-
-
+        self.new_graphic_settings.inventory = state[10]
+        self.new_graphic_settings.pick_boolean = state[11]
 
         self.new_graphic_settings.window_resize(self.width, self.height)
-
-
-
-
-
-
-
-"""
-        running = False
-        pygame.event.set_grab(False)
-        self.width = width
-        self.height = height
-
-
-
-
-        while not running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-
-                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-
-                    self.new_graphic_settings.first_mouse = True
-                    self.new_graphic_settings.mouse_counter = 0
-                    pygame.mouse.set_pos(self.width/2, self.height/2)
-
-                    running = True
-
-                if event.type == pygame.VIDEORESIZE:
-                    # Resizes window
-                    if event.w > self.width:
-                        self.width = event.w
-                        self.height = event.h - 1
-                    else:
-                        self.width = event.w
-                        self.height = event.h
-                    self.new_graphic_settings.window_resize(self.width, self.height)
-
-
-
-            self.screen.fill((0,0,0))
-            pygame.display.flip()"""
 
 
 def start():
@@ -356,13 +371,13 @@ def about_page():
         screen.fill((0, 0, 0))
 
         # --- Drawing code should go here
-        welcome_message = font.render("This game is inspired by the mobile game - The Room.  ", True, (255, 255, 255))
-        welcome_message_two = font.render("This is a 3D interactive puzzle game which you can manipulate objects ",
+        welcome_message = font.render("This game is inspired by the mobile game - The Room and a souviner that I bought  ", True, (255, 255, 255))
+        welcome_message_two = font.render(" in Greece a long time ago. This is a 3D interactive game which you can manipulate objects ",
                                           True, (255, 255, 255))
         welcome_message_three = font.render("and hidden compartments to solve the puzzle.", True, (255, 255, 255))
         last_welcome_message = font.render("Enjoy!", True, (255, 255, 255))
-        screen.blit(welcome_message, [350, 1000 / 5])
-        screen.blit(welcome_message_two, [250, 1000 / 5 + 30])
+        screen.blit(welcome_message, [250, 1000 / 5])
+        screen.blit(welcome_message_two, [200, 1000 / 5 + 30])
         screen.blit(welcome_message_three, [400, 1000 / 5 + 60])
         screen.blit(last_welcome_message, [600, 1000 / 5 + 90])
 
@@ -401,62 +416,24 @@ def help_page(width, height):
         screen.fill((0, 0, 0))
 
         # --- Drawing code should go here
-        welcome_message = font.render("Use WASD to move around. w - forward, s - backward, a - left, d - right.  ",
-                                      True, (255, 255, 255))
+        welcome_message = font.render(
+            "Use WASD to move around. w - forward, s - backward, a - left, d - right, i - inventory.  ",
+            True, (255, 255, 255))
         welcome_message_two = font.render(
             "Click on objects to rotate them. You can move your mouse to look around the room",
             True, (255, 255, 255))
         welcome_message_three = font.render("Press escape to pause the game", True, (255, 255, 255))
-        last_welcome_message = font.render("Enjoy!", True, (255, 255, 255))
-        screen.blit(welcome_message, [width / 2 * 0.45, height / 2 * 0.4])
+        last_welcome_message = font.render("You can only move objects with your hand (empty slot in inventory)!", True, (255, 255, 255))
+
+        screen.blit(welcome_message, [width / 2 * 0.4 , height / 2 * 0.4])
         screen.blit(welcome_message_two, [width / 2 * 0.4, height / 2 * 0.6])
         screen.blit(welcome_message_three, [width / 2 * 0.7, height / 2 * 0.8])
-        screen.blit(last_welcome_message, [width / 2 * 0.9, height / 2 * 1.0])
+        screen.blit(last_welcome_message, [width / 2 * 0.4, height / 2 * 1.0])
 
         back_button.draw(screen)
 
         # --- Go ahead and update the screen with what we've drawn.
         pygame.display.flip()
-
-
-def settings_page(width, height):
-    font = pygame.font.SysFont('Calibri', 50, False, False)
-    size = (width, height)
-    screen = pygame.display.set_mode(size)
-
-    back_button = button((200, 200, 0), width / 2 * 0.8, height / 2 * 1.4, 250, 75, "Back")
-    done = False
-
-    while not done:
-        # --- Main event loop
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_position = pygame.mouse.get_pos()
-                if back_button.isOver(mouse_position):
-                    back_button.color = (255, 255, 0)
-
-            if event.type == pygame.MOUSEBUTTONUP:
-                mouse_position = pygame.mouse.get_pos()
-                if back_button.isOver(mouse_position):
-                    done = True
-
-        # --- Game logic should go here
-
-        # Background Colour
-
-        screen.fill((0, 0, 0))
-
-        welcome_message = font.render("Settings", True, (255, 255, 255))
-        screen.blit(welcome_message, [width / 2 * 0.85, height / 2 * 0.5])
-
-        back_button.draw(screen)
-
-        # --- Go ahead and update the screen with what we've drawn.
-        pygame.display.flip()
-
-    return pygame.display.get_window_size()
 
 
 start()
