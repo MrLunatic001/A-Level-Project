@@ -15,3 +15,4 @@ slide     5 211
 plane     6 200
 insert    7 na
 top       8 199
+book      9 188

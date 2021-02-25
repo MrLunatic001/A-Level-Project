@@ -20,12 +20,16 @@ class graphic():
         self.models_boolean = []
         self.object_locations = []
         self.models_offset = [0,0,0, 0]
-        self.models_maxoffset = [0,0,10, 65, 40]
+        self.models_maxoffset = [0,0,23, 32, 40]
         self.object_counter = 0
         self.mouse_counter = 0
         self.inventory = [0, 0, 0]
         self.game_finished = False
         self.pick_boolean = [True, False, False, False, False]
+        self.equip_sound = pygame.mixer.Sound("Audio/equip.mp3")
+        self.lock_sound = pygame.mixer.Sound("Audio/lock.mp3")
+        self.lock_sound.set_volume(0.3)
+        self.equip_sound.set_volume(0.5)
 
         # Boot up the graphic procedures
         self.compile_shader()
@@ -110,10 +114,11 @@ class graphic():
                 elif i == 2:
                     if self.y_offset >= 0:
                         if self.models_offset[i] <= self.models_maxoffset[i]:
-                            print(self.models_offset[i])
-                            self.models_offset[i] += self.y_offset * 1
-                            self.rotation = pyrr.Matrix44.from_x_rotation(self.y_offset / 700)
-                            self.object_locations[i] = self.object_locations[i] @ self.rotation
+                            # Control how much flap lifts by
+                            if self.y_offset <= 4:
+                                self.models_offset[i] += self.y_offset
+                                self.rotation = pyrr.Matrix44.from_translation((0,self.y_offset / 100,0))
+                                self.object_locations[i] = self.object_locations[i] @ self.rotation
                         else:
                             self.models_boolean[i] = False
                             self.pick_boolean[i] = False
@@ -122,12 +127,13 @@ class graphic():
                 elif i == 3:
                     if self.x_offset >= 0:
                         if self.models_offset[i] <= self.models_maxoffset[i]:
-                            print(self.models_offset[i])
-                            self.models_offset[i] += self.x_offset * 1
-                            self.rotation = pyrr.Matrix44.from_z_rotation(self.x_offset * -1 / 100)
-                            # Move flap as well
-                            self.object_locations[2] = self.object_locations[2] @ self.rotation
-                            self.object_locations[i] = self.object_locations[i] @ self.rotation
+                            # Control how much upper box rotates by
+                            if self.x_offset <= 4:
+                                self.models_offset[i] += self.x_offset * 1
+                                self.rotation = pyrr.Matrix44.from_z_rotation(self.x_offset * -1 / 50)
+                                # Move flap as well
+                                self.object_locations[2] = self.object_locations[2] @ self.rotation
+                                self.object_locations[i] = self.object_locations[i] @ self.rotation
                         else:
                             self.models_boolean[i] = False
                             self.pick_boolean[i] = False
@@ -135,12 +141,13 @@ class graphic():
 
                 # Lift preview box
                 elif i == 4:
-                    if self.x_offset >= 0:
+                    if self.y_offset >= 0:
                         if self.models_offset[i] <= self.models_maxoffset[i]:
-                            print(self.models_offset[i])
-                            self.models_offset[i] += self.y_offset * 1
-                            self.rotation = pyrr.Matrix44.from_x_rotation(self.y_offset  / 700)
-                            self.object_locations[i] = self.object_locations[i] @ self.rotation
+                            # Control how much preview box lifts by
+                            if self.y_offset <= 4:
+                                self.models_offset[i] += self.y_offset * 1
+                                self.rotation = pyrr.Matrix44.from_x_rotation(self.y_offset  / 700)
+                                self.object_locations[i] = self.object_locations[i] @ self.rotation
                         else:
                             self.models_boolean[i] = False
 
@@ -238,6 +245,7 @@ class graphic():
 
     def player_move(self, keys_pressed):
         self.keys_pressed = keys_pressed
+
         if keys_pressed[pygame.K_w]:
             self.cam.process_keyboard("FORWARD", 0.2)
         if keys_pressed[pygame.K_a]:
@@ -321,35 +329,28 @@ class graphic():
 
         # If clicked on hammer
         if colour[0] == 255:
-            print("hammer")
             self.models_boolean[0] = not self.models_boolean[0]
             self.inventory[1] = 1
             self.pick_boolean[1] = True
+            self.equip_sound.play()
 
         # If inventory is hammer and clicked on lock:
         elif colour[0] == 244:
-            print("lock")
             if self.inventory[self.inventory_choice] == 1:
                 self.models_boolean[1] = not self.models_boolean[1]
                 self.pick_boolean[2] = True
+                self.lock_sound.play()
         # If flap is being lifted:
         elif colour[0] == 233:
-            print("flap")
-            if self.inventory[self.inventory_choice] == 0:
-                self.models_boolean[2] = not self.models_boolean[2]
+            self.models_boolean[2] = not self.models_boolean[2]
         # If upper box is being lifted
         elif colour[0] == 222:
-            print("upper box")
-            if self.inventory[self.inventory_choice] == 0:
-                self.models_boolean[3] = not self.models_boolean[3]
+            self.models_boolean[3] = not self.models_boolean[3]
         # If the preview box is being lifted
         elif colour[0] == 211:
-            print("preview box")
             if self.models_offset[4] < 40:
-                if self.inventory[self.inventory_choice] == 0:
-                    self.models_boolean[4] = not self.models_boolean[4]
+                self.models_boolean[4] = not self.models_boolean[4]
             else:
-                print("finished")
                 self.game_finished = True
 
     def checkwin(self):

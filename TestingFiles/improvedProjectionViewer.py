@@ -1,4 +1,4 @@
-import improvedWireFrame
+from TestingFiles import improvedWireFrame
 import pygame
 import numpy
 

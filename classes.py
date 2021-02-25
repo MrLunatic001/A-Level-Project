@@ -71,6 +71,8 @@ class game:
 
         done = False
         pygame.mouse.set_pos(self.width / 2, self.height / 2)
+        walk_sound = pygame.mixer.Sound("Audio/walk.mp3")
+        play = False
 
         # Loop
         while not done:
@@ -89,12 +91,16 @@ class game:
                     w, h = pygame.display.get_surface().get_size()
                     self.inventory(w, h, self.new_graphic_settings.get_state())
 
+
+
             # Checks if level is finished
             if self.new_graphic_settings.checkwin():
-                print("next level")
-                self.inventory_choice = 0
-                self.level_counter += 1
-                self.next_level(self.width, self.height)
+                if self.level_counter == 0:
+                    self.inventory_choice = 0
+                    self.level_counter += 1
+                    self.next_level(self.width, self.height)
+                else:
+                    done = True
 
 
             self.new_graphic_settings.mouse_move()
@@ -106,7 +112,15 @@ class game:
             # self.new_graphic_settings.display_instanced()
             self.new_graphic_settings.display()
 
-
+            # Play walking sound if walking
+            if keys_pressed[pygame.K_w] or  keys_pressed[pygame.K_a] or  keys_pressed[pygame.K_d] or keys_pressed[pygame.K_s]:
+                print("yes")
+                if not play:
+                    play = True
+                    walk_sound.play(-1)
+            else:
+                walk_sound.stop()
+                play = False
 
             if click:
                 mouse_x = pygame.mouse.get_pos()[0]
@@ -119,8 +133,11 @@ class game:
 
             self.clock.tick(60)
 
-        # Ends pygame
-        pygame.quit()
+        self.game_over(self.width, self.height)
+
+
+
+
 
     def next_level(self, width, height):
         font = pygame.font.SysFont('Calibri', 50, False, False)
@@ -246,6 +263,60 @@ class game:
 
         self.save_state(state, self.level_counter)
 
+    def game_over(self, width, height):
+        font = pygame.font.SysFont('Calibri', 50, False, False)
+        size = (width, height)
+        BROWN = (139,69,19)
+        quited = False
+        screen = pygame.display.set_mode(size)
+        welcome_message = font.render("Game Completed!", True, BROWN)
+        welcome_message_one = font.render("Thank you for playing.", True, BROWN)
+        welcome_message_two = font.render("I hope you enjoyed playing this game.", True, BROWN)
+
+        quit = button((200, 200, 0), width / 2 * 0.8, height / 2 * 1.4, 250, 75, "quit")
+        menu = button((200, 200, 0), width / 2 * 0.8, height / 2 * 1.7, 250, 75, "Main Menu")
+        done = False
+
+        while not done:
+            # --- Main event loop
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_position = pygame.mouse.get_pos()
+                    if quit.isOver(mouse_position):
+                        quit.color = (255, 255, 0)
+                    if menu.isOver(mouse_position):
+                        menu.color = (255, 255, 0)
+                if event.type == pygame.MOUSEBUTTONUP:
+                    mouse_position = pygame.mouse.get_pos()
+                    if quit.isOver(mouse_position):
+                        done = True
+                        quited = True
+                    if menu.isOver(mouse_position):
+                        done = True
+
+            # --- Game logic should go here
+
+            # Background Colour
+
+            screen.fill((237, 201, 175))
+
+            screen.blit(welcome_message, [width / 2 * 0.65, height / 2 * 0.5])
+            screen.blit(welcome_message_one, [width / 2 * 0.6, height / 2 * 0.7])
+            screen.blit(welcome_message_two, [width / 2 * 0.35, height / 2 * 0.9])
+
+            quit.draw(screen)
+            menu.draw(screen)
+
+            # --- Go ahead and update the screen with what we've drawn.
+            pygame.display.flip()
+
+        if quited:
+            sys.exit()
+        else:
+            start()
+
     def inventory(self, width, height, state):
         inventory = state[10]
         font = pygame.font.SysFont('Calibri', 50, False, False)
@@ -330,7 +401,6 @@ class game:
         elif level == 1:
             self.new_graphic_settings = level2Graphics.graphic(self.width, self.height, self.inventory_choice)
             self.new_graphic_settings.key_inserted = state[12]
-            print("level2")
         # Return back to saved state
         self.new_graphic_settings.object_locations = state[0]
         self.new_graphic_settings.models_offset = state[1]
@@ -504,6 +574,7 @@ def help_page(width, height):
 
         # --- Go ahead and update the screen with what we've drawn.
         pygame.display.flip()
+
 
 
 start()

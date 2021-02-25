@@ -1,4 +1,4 @@
-import wireframe
+from TestingFiles import wireframe
 import pygame
 
 key_to_function = {
