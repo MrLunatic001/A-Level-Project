@@ -6,7 +6,7 @@ import os
 os.environ['SDL_VIDEO_WINDOW_POS'] = '400, 200'
 import pygame
 from OpenGL.GL import *
-from SubFiles import improvedGraphics
+from SubFiles import improvedGraphics, level2Graphics
 import sys
 
 
@@ -63,6 +63,7 @@ class game:
         self.height = height
         self.inventory_choice = 0
         self.new_graphic_settings = improvedGraphics.graphic(width, height, self.inventory_choice)
+        self.level_counter = 0
 
         self.clock = pygame.time.Clock()
 
@@ -88,6 +89,14 @@ class game:
                     w, h = pygame.display.get_surface().get_size()
                     self.inventory(w, h, self.new_graphic_settings.get_state())
 
+            # Checks if level is finished
+            if self.new_graphic_settings.checkwin():
+                print("next level")
+                self.inventory_choice = 0
+                self.level_counter += 1
+                self.next_level(self.width, self.height)
+
+
             self.new_graphic_settings.mouse_move()
 
             keys_pressed = pygame.key.get_pressed()
@@ -96,6 +105,8 @@ class game:
 
             # self.new_graphic_settings.display_instanced()
             self.new_graphic_settings.display()
+
+
 
             if click:
                 mouse_x = pygame.mouse.get_pos()[0]
@@ -110,6 +121,56 @@ class game:
 
         # Ends pygame
         pygame.quit()
+
+    def next_level(self, width, height):
+        font = pygame.font.SysFont('Calibri', 50, False, False)
+        size = (width, height)
+        WHITE = (255, 255, 255)
+        screen = pygame.display.set_mode(size)
+        welcome_message = font.render("Next Level?", True, WHITE)
+
+        back_button = button((200, 200, 0), width / 2 * 0.8, height / 2 * 1.4, 250, 75, "Continue")
+        done = False
+
+        while not done:
+            # --- Main event loop
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_position = pygame.mouse.get_pos()
+                    if back_button.isOver(mouse_position):
+                        back_button.color = (255, 255, 0)
+                if event.type == pygame.MOUSEBUTTONUP:
+                    mouse_position = pygame.mouse.get_pos()
+                    if back_button.isOver(mouse_position):
+                        done = True
+                if event.type == pygame.KEYDOWN:
+                    # Chooses inventory slot
+                    if event.key == pygame.K_1:
+                        self.inventory_choice = 0
+                    elif event.key == pygame.K_2:
+                        self.inventory_choice = 1
+                    elif event.key == pygame.K_3:
+                        self.inventory_choice = 2
+
+            # --- Game logic should go here
+
+            # Background Colour
+
+            screen.fill((100, 100, 100))
+
+
+
+            screen.blit(welcome_message, [width / 2 * 0.8, height / 2 * 0.5])
+
+
+            back_button.draw(screen)
+
+            # --- Go ahead and update the screen with what we've drawn.
+            pygame.display.flip()
+        self.screen = pygame.display.set_mode((self.width, self.height), pygame.OPENGL | pygame.DOUBLEBUF)
+        self.new_graphic_settings = level2Graphics.graphic(self.width, self.height, 0)
 
     def pausemenu(self, width, height, state):
 
@@ -183,7 +244,7 @@ class game:
             # --- Go ahead and update the screen with what we've drawn.
             pygame.display.flip()
 
-        self.save_state(state)
+        self.save_state(state, self.level_counter)
 
     def inventory(self, width, height, state):
         inventory = state[10]
@@ -198,6 +259,7 @@ class game:
         location = [[width / 2 * 0.45, height / 2], [width / 2 * 0.95, height / 2], [width / 2 * 1.45, height / 2]]
         hammer = pygame.transform.scale(pygame.image.load('Textures/hammer.png'), (95, 95))
         empty = pygame.transform.scale(pygame.image.load('Textures/empty.png'), (95, 95))
+        key = pygame.transform.scale(pygame.image.load('Textures/key.png'), (95, 95))
 
         rect_pos = [width / 2 * 0.45, height / 2]
 
@@ -218,14 +280,12 @@ class game:
                     if back_button.isOver(mouse_position):
                         done = True
                 if event.type == pygame.KEYDOWN:
+                    # Chooses inventory slot
                     if event.key == pygame.K_1:
-                        rect_pos = [width / 2 * 0.45, height / 2]
                         self.inventory_choice = 0
                     elif event.key == pygame.K_2:
-                        rect_pos = [width / 2 * 0.95, height / 2]
                         self.inventory_choice = 1
                     elif event.key == pygame.K_3:
-                        rect_pos = [width / 2 * 1.45, height / 2]
                         self.inventory_choice = 2
 
             # --- Game logic should go here
@@ -233,6 +293,8 @@ class game:
             # Background Colour
 
             screen.fill((100, 100, 100))
+
+            # Displays inventory slot
 
             pygame.draw.rect(screen, (0, 255, 0),
                              (location[self.inventory_choice][0], location[self.inventory_choice][1], 101, 101), 0)
@@ -244,6 +306,8 @@ class game:
                     screen.blit(empty, location[i])
                 elif inventory[i] == 1:
                     screen.blit(hammer, location[i])
+                elif inventory[i] == 2:
+                    screen.blit(key, location[i])
 
             screen.blit(welcome_message, [width / 2 * 0.9, height / 2 * 0.5])
             screen.blit(slot_one, [width / 2 * 0.5, height / 2 * 0.7])
@@ -255,12 +319,18 @@ class game:
             # --- Go ahead and update the screen with what we've drawn.
             pygame.display.flip()
 
-        self.save_state(state)
+        self.save_state(state, self.level_counter)
 
-    def save_state(self, state):
+    def save_state(self, state, level):
+
         self.screen = pygame.display.set_mode((self.width, self.height), pygame.OPENGL | pygame.DOUBLEBUF)
-        self.new_graphic_settings = improvedGraphics.graphic(self.width, self.height, self.inventory_choice)
+        if level == 0:
+            self.new_graphic_settings = improvedGraphics.graphic(self.width, self.height, self.inventory_choice)
 
+        elif level == 1:
+            self.new_graphic_settings = level2Graphics.graphic(self.width, self.height, self.inventory_choice)
+            self.new_graphic_settings.key_inserted = state[12]
+            print("level2")
         # Return back to saved state
         self.new_graphic_settings.object_locations = state[0]
         self.new_graphic_settings.models_offset = state[1]
@@ -371,7 +441,7 @@ def about_page():
         screen.fill((0, 0, 0))
 
         # --- Drawing code should go here
-        welcome_message = font.render("This game is inspired by the mobile game - The Room and a souviner that I bought  ", True, (255, 255, 255))
+        welcome_message = font.render("This game is inspired by the mobile game - The Room and a souvenir that I bought  ", True, (255, 255, 255))
         welcome_message_two = font.render(" in Greece a long time ago. This is a 3D interactive game which you can manipulate objects ",
                                           True, (255, 255, 255))
         welcome_message_three = font.render("and hidden compartments to solve the puzzle.", True, (255, 255, 255))

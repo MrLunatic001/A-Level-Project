@@ -19,13 +19,14 @@ class graphic():
         self.inventory_choice = choice
         self.models_boolean = []
         self.object_locations = []
-        self.models_offset = [0,0,0, 0]
-        self.models_maxoffset = [0,0,10, 65, 40]
+        self.models_offset = []
+        self.models_maxoffset = [-10, -50, 0, -50, -80, 0, 0,250]
         self.object_counter = 0
         self.mouse_counter = 0
         self.inventory = [0, 0, 0]
         self.game_finished = False
-        self.pick_boolean = [True, False, False, False, False]
+        self.key_inserted = False
+        self.pick_boolean = [True, False, False, False, False, False, False, False, False]
 
         # Boot up the graphic procedures
         self.compile_shader()
@@ -53,7 +54,7 @@ class graphic():
         projection = pyrr.matrix44.create_perspective_projection_matrix(45, self.width / self.height, 0.1, 100)
 
         # Pick_colours
-        self.pick_colours = [(255, 0, 0), (244,0,0), (233,0,0), (222,0,0), (211,0,0)]
+        self.pick_colours = [(255, 0, 0), (244, 0, 0), (233, 0, 0), (222, 0, 0), (211, 0, 0), (200, 0, 0),(0,0,0), (199,0,0)]
 
         # Get locations
         self.model_location = glGetUniformLocation(self.shader, "model")
@@ -78,6 +79,8 @@ class graphic():
         # Draw
         for i in range(len(self.models)):
 
+            if i == 6 and not self.key_inserted:
+                continue
             glBindVertexArray(self.VAO[i])
             glBindTexture(GL_TEXTURE_2D, self.texture[i])
 
@@ -98,51 +101,85 @@ class graphic():
                 self.models_offset[i] += self.y_offset * -1
                 self.rotation = pyrr.Matrix44.from_y_rotation(self.models_offset[i] / 25)
                 glUniformMatrix4fv(self.model_location, 1, GL_FALSE, rotation @ self.object_locations[i])"""
-                # Make hammer disappear
+                # Slide horizontal bar
                 if i == 0:
-                    self.models[i] = (None, None)
-                    self.models_boolean[i] = False
-                # Make lock disappear
-                elif i == 1:
-                    self.models[i] = (None, None)
-                    self.models_boolean[i] = False
-                # Lift flap
-                elif i == 2:
-                    if self.y_offset >= 0:
-                        if self.models_offset[i] <= self.models_maxoffset[i]:
-                            print(self.models_offset[i])
-                            self.models_offset[i] += self.y_offset * 1
-                            self.rotation = pyrr.Matrix44.from_x_rotation(self.y_offset / 700)
+                    if self.x_offset <= 0:
+                        if self.models_offset[i] >= self.models_maxoffset[i]:
+
+                            self.models_offset[i] += self.x_offset * 1
+                            self.rotation = pyrr.Matrix44.from_y_rotation(self.x_offset / 700)
                             self.object_locations[i] = self.object_locations[i] @ self.rotation
                         else:
                             self.models_boolean[i] = False
                             self.pick_boolean[i] = False
-                            self.pick_boolean[3] = True
-                # Lift upper box
-                elif i == 3:
-                    if self.x_offset >= 0:
-                        if self.models_offset[i] <= self.models_maxoffset[i]:
-                            print(self.models_offset[i])
-                            self.models_offset[i] += self.x_offset * 1
-                            self.rotation = pyrr.Matrix44.from_z_rotation(self.x_offset * -1 / 100)
-                            # Move flap as well
+                            self.pick_boolean[1] = True
+                # Slide key slot
+                elif i == 1:
+                    if self.y_offset <= 0:
+                        if self.models_offset[i] >= self.models_maxoffset[i]:
+
+                            self.models_offset[i] += self.y_offset * 1
+                            self.rotation = pyrr.Matrix44.from_translation((0, 0, self.y_offset * 1 / 100))
+
+                            # Move key as well
                             self.object_locations[2] = self.object_locations[2] @ self.rotation
                             self.object_locations[i] = self.object_locations[i] @ self.rotation
                         else:
-                            self.models_boolean[i] = False
                             self.pick_boolean[i] = False
-                            self.pick_boolean[4] = True
+                            self.models_boolean[i] = False
+                            self.pick_boolean[2] = True
+                            self.pick_boolean[3] = True
+                # Key clicked
+                elif i == 2:
+                    self.models[i] = (None, None)
+                    self.models_boolean[i] = False
+                # Middle box moved
+                elif i == 3:
+                    if self.y_offset <= 0:
+                        if self.models_offset[i] >= self.models_maxoffset[i]:
 
-                # Lift preview box
-                elif i == 4:
-                    if self.x_offset >= 0:
-                        if self.models_offset[i] <= self.models_maxoffset[i]:
-                            print(self.models_offset[i])
                             self.models_offset[i] += self.y_offset * 1
-                            self.rotation = pyrr.Matrix44.from_x_rotation(self.y_offset  / 700)
+                            self.rotation = pyrr.Matrix44.from_translation((0, 0, self.y_offset * 1 / 100))
+
+                            # Move upper box, key slide as well
+                            self.object_locations[4] = self.object_locations[4] @ self.rotation
+                            self.object_locations[5] = self.object_locations[5] @ self.rotation
+                            self.object_locations[7] = self.object_locations[7] @ self.rotation
+                            self.object_locations[6] = self.object_locations[6] @ self.rotation
                             self.object_locations[i] = self.object_locations[i] @ self.rotation
                         else:
+                            self.pick_boolean[i] = False
                             self.models_boolean[i] = False
+                            self.pick_boolean[4] = True
+
+                # Move key slot
+                elif i == 4:
+                    if self.y_offset <= 0:
+                        if self.models_offset[i] >= self.models_maxoffset[i]:
+
+                            self.models_offset[i] += self.y_offset
+                            self.rotation = pyrr.Matrix44.from_translation((0,  self.y_offset  / 100, 0))
+
+
+                            self.object_locations[i] = self.object_locations[i] @ self.rotation
+                        else:
+                            self.pick_boolean[i] = False
+                            self.models_boolean[i] = False
+                            self.pick_boolean[5] = True
+
+                # Move upper box
+                elif i == 7:
+
+                    if self.models_offset[i] <= self.models_maxoffset[i]:
+                        if self.x_offset >= 0:
+                            print(self.models_offset[i])
+                            self.models_offset[i] += self.x_offset
+                            self.rotation = pyrr.Matrix44.from_translation((self.x_offset * -1 / 100, 0  , 0))
+                            self.object_locations[i] = self.object_locations[i] @ self.rotation
+                    else:
+                        self.pick_boolean[i] = False
+                        self.models_boolean[i] = False
+
 
 
 
@@ -161,9 +198,6 @@ class graphic():
                 # glUniformMatrix4fv(self.light_loc, 1, GL_FALSE, self.object_locations[i])
             if self.models[i][0] is not None:
                 glDrawArrays(GL_TRIANGLES, 0, len(self.models[i][0]))
-
-
-
 
         # Picker frame buffer
         glUniform1i(self.switcher_loc, 1)
@@ -284,23 +318,25 @@ class graphic():
         self.object_locations.append(pyrr.matrix44.create_from_translation(pyrr.Vector3(position)))
 
     def create_object(self):
-        self.texture = glGenTextures(9)
+        self.texture = glGenTextures(12)
 
-        self.make_object("Objects/hammer.obj", "Textures/ocean.png", [11, -25, 35])
-        self.make_object("Objects/lock.obj", "Textures/lock.jpg", [11, -25, 35])
-        self.make_object("Objects/flap.obj", "Textures/flap.jpg", [11, -25, 34.99])
-        self.make_object("Objects/box_upper.obj", "Textures/box.jpg", [11, -25, 35])
-        self.make_object("Objects/puzzlePreview.obj", "Textures/rosewood.jpg", [11, -25, 35])
+        self.make_object("Objects/horizontal_slide.obj", "Textures/rosewood.jpg", [11, -25, 35])
+        self.make_object("Objects/key_slot.obj", "Textures/rosewood.jpg", [11, -25, 35])
+        self.make_object("Objects/key.obj", "Textures/flap.jpg", [11, -25, 35])
+        self.make_object("Objects/middle_puzzle.obj", "Textures/rosewood.jpg", [11, -25, 35])
+        self.make_object("Objects/key_slide.obj", "Textures/rosewood.jpg", [11, -25, 35])
+        self.make_object("Objects/key_plane.obj", "Textures/wallpaper.jpg", [11, -25, 35])
+        self.make_object("Objects/inserted_key.obj", "Textures/flap.jpg", [11, -25, 35])
+
+        self.make_object("Objects/upper_puzzle.obj", "Textures/rosewood.jpg", [11, -25, 35])
         self.make_object("Objects/Room.obj", "Textures/table.jpg", [0, 8, 50])
         self.make_object("Objects/floor.obj", "Textures/Brick_Block.png", [2, -1, 10])
         self.make_object("Objects/Table.obj", "Textures/wallpaper.jpg", [11, -25, 35])
-        self.make_object("Objects/box_bottom.obj", "Textures/box.jpg", [11, -25, 35])
+        self.make_object("Objects/bottom_puzzle.obj", "Textures/rosewood.jpg", [11, -25, 35])
 
 
 
-
-
-        for i in range(9):
+        for i in range(12):
             self.models_boolean.append(False)
             self.models_offset.append(0)
 
@@ -319,38 +355,49 @@ class graphic():
     def pick(self, mouse_x, mouse_y):
         colour = glReadPixels(mouse_x, mouse_y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE)
 
-        # If clicked on hammer
+        # If clicked on horizontal slide
         if colour[0] == 255:
-            print("hammer")
+            print("horizonal")
             self.models_boolean[0] = not self.models_boolean[0]
-            self.inventory[1] = 1
-            self.pick_boolean[1] = True
 
-        # If inventory is hammer and clicked on lock:
+        # If click on key slot:
         elif colour[0] == 244:
-            print("lock")
-            if self.inventory[self.inventory_choice] == 1:
-                self.models_boolean[1] = not self.models_boolean[1]
-                self.pick_boolean[2] = True
-        # If flap is being lifted:
+            print("slot")
+            self.models_boolean[1] = not self.models_boolean[1]
+
+        # If key is clicked:
         elif colour[0] == 233:
-            print("flap")
-            if self.inventory[self.inventory_choice] == 0:
-                self.models_boolean[2] = not self.models_boolean[2]
-        # If upper box is being lifted
+            print("key")
+            self.inventory[1] = 2
+            self.models_boolean[2] = not self.models_boolean[2]
+        # If middle box is moved
         elif colour[0] == 222:
-            print("upper box")
+            print("middle box")
             if self.inventory[self.inventory_choice] == 0:
                 self.models_boolean[3] = not self.models_boolean[3]
-        # If the preview box is being lifted
+        # If the slide is being moved
         elif colour[0] == 211:
-            print("preview box")
-            if self.models_offset[4] < 40:
-                if self.inventory[self.inventory_choice] == 0:
-                    self.models_boolean[4] = not self.models_boolean[4]
-            else:
-                print("finished")
-                self.game_finished = True
+            print("slide")
+
+            if self.inventory[self.inventory_choice] == 0:
+                self.models_boolean[4] = not self.models_boolean[4]
+        # If the keyhole is clicked
+        elif colour[0] == 200:
+            print("keyhole")
+            if self.inventory[self.inventory_choice] == 2:
+                # Move key to the keyhole
+                self.key_inserted = True
+                self.pick_boolean[5] = False
+                self.inventory[self.inventory_choice] = 0
+                self.pick_boolean[7] = True
+
+        # If the upper box is clicked
+        elif colour[0] == 199:
+            print("upper")
+            self.models_boolean[7] = not self.models_boolean[7]
+
+
+
 
     def checkwin(self):
         return self.game_finished
@@ -362,4 +409,4 @@ class graphic():
     def get_state(self):
         return self.object_locations, self.models_offset, self.models_maxoffset, self.models, self.cam.camera_pos, \
                self.cam.camera_up, self.cam.camera_front, self.cam.camera_right, self.cam.jaw, self.cam.pitch, self.inventory, \
-                self.pick_boolean
+               self.pick_boolean, self.key_inserted

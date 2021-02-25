@@ -2,4 +2,16 @@ item number colour
 hammer 1 255
 lock   2 244
 flap   3 233
-upper box 4 222
+upperbox 4 222
+preview 5 211
+
+level2
+
+horizonal 1 255
+slot      2 244
+key       3 233
+middle    4 222
+slide     5 211
+plane     6 200
+insert    7 na
+top       8 199
