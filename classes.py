@@ -72,6 +72,9 @@ class game:
         done = False
         pygame.mouse.set_pos(self.width / 2, self.height / 2)
         walk_sound = pygame.mixer.Sound("Audio/walk.mp3")
+        pygame.mixer.music.load("Audio/background.mp3")
+        pygame.mixer.music.set_volume(.5)
+        pygame.mixer.music.play(-1, 0.0)
         play = False
 
         # Loop
@@ -87,7 +90,7 @@ class game:
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     w, h = pygame.display.get_surface().get_size()
                     self.pausemenu(w, h, self.new_graphic_settings.get_state())
-                elif event.type == pygame.KEYDOWN and event.key == pygame.K_i:
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_e:
                     w, h = pygame.display.get_surface().get_size()
                     self.inventory(w, h, self.new_graphic_settings.get_state())
 
@@ -114,7 +117,6 @@ class game:
 
             # Play walking sound if walking
             if keys_pressed[pygame.K_w] or  keys_pressed[pygame.K_a] or  keys_pressed[pygame.K_d] or keys_pressed[pygame.K_s]:
-                print("yes")
                 if not play:
                     play = True
                     walk_sound.play(-1)
@@ -557,7 +559,7 @@ def help_page(width, height):
 
         # --- Drawing code should go here
         welcome_message = font.render(
-            "Use WASD to move around. w - forward, s - backward, a - left, d - right, i - inventory.  ",
+            "Use WASD to move around. w - forward, s - backward, a - left, d - right, e - inventory.  ",
             True, (255, 255, 255))
         welcome_message_two = font.render(
             "Click on objects to rotate them. You can move your mouse to look around the room",

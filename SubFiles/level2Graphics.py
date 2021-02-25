@@ -29,6 +29,7 @@ class graphic():
         self.pick_boolean = [True, False, False, False, False, False, False, False, False, False]
         self.equip_sound = pygame.mixer.Sound("Audio/equip.mp3")
         self.unlock_sound = pygame.mixer.Sound("Audio/unlock.mp3")
+        self.gamecomplete_sound = pygame.mixer.Sound("Audio/GameComplete.mp3")
 
         # Boot up the graphic procedures
         self.compile_shader()
@@ -412,6 +413,7 @@ class graphic():
                     self.models_boolean[8] = not self.models_boolean[8]
             else:
                 self.game_finished = True
+                self.gamecomplete_sound.play()
 
 
 
