@@ -386,8 +386,7 @@ class graphic():
             self.equip_sound.play()
         # If middle box is moved
         elif colour[0] == 222:
-            if self.inventory[self.inventory_choice] == 0:
-                self.models_boolean[3] = not self.models_boolean[3]
+            self.models_boolean[3] = not self.models_boolean[3]
         # If the slide is being moved
         elif colour[0] == 211:
             if self.inventory[self.inventory_choice] == 0:

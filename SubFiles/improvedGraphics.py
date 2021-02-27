@@ -51,7 +51,7 @@ class graphic():
         # Create background colour
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
 
         # Perpective projection
         projection = pyrr.matrix44.create_perspective_projection_matrix(45, self.width / self.height, 0.1, 100)
@@ -75,6 +75,7 @@ class graphic():
 
         # Fill background colours
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
 
         # Specify Colour or Texture
         glUniform1i(self.switcher_loc, 0)
@@ -232,9 +233,9 @@ class graphic():
             glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, self.models[i][1].itemsize * 8, ctypes.c_void_p(12))
 
             # Layer 3 (Normal)
-
-            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, self.models[i][1].itemsize * 8, ctypes.c_void_p(20))
             glEnableVertexAttribArray(2)
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, self.models[i][1].itemsize * 8, ctypes.c_void_p(20))
+
 
     def window_resize(self, width, height):
         self.width = width
