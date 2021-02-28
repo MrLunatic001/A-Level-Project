@@ -27,9 +27,6 @@ class graphic():
         self.game_finished = False
         self.key_inserted = False
         self.pick_boolean = [True, False, False, False, False, False, False, False, False, False]
-        self.equip_sound = pygame.mixer.Sound("Audio/equip.mp3")
-        self.unlock_sound = pygame.mixer.Sound("Audio/unlock.mp3")
-        self.gamecomplete_sound = pygame.mixer.Sound("Audio/GameComplete.mp3")
 
         # Boot up the graphic procedures
         self.compile_shader()
@@ -346,8 +343,8 @@ class graphic():
         self.make_object("Objects/upper_puzzle.obj", "Textures/rosewood.jpg", [11, -25, 35])
         self.make_object("Objects/book.obj", "Textures/book.jpg", [11, -25, 35])
         self.make_object("Objects/Room.obj", "Textures/table.jpg", [0, 8, 50])
-        self.make_object("Objects/floor.obj", "Textures/Brick_Block.png", [2, -1, 10])
-        self.make_object("Objects/Table.obj", "Textures/wallpaper.jpg", [11, -25, 35])
+        self.make_object("Objects/floor.obj", "Textures/carpet.png", [2, -1, 13])
+        self.make_object("Objects/Table.obj", "Textures/table.jpg", [11, -25, 35])
         self.make_object("Objects/bottom_puzzle.obj", "Textures/rosewood.jpg", [11, -25, 35])
 
 
@@ -383,14 +380,13 @@ class graphic():
         elif colour[0] == 233:
             self.inventory[1] = 2
             self.models_boolean[2] = not self.models_boolean[2]
-            self.equip_sound.play()
+            pygame.mixer.Channel(3).play(pygame.mixer.Sound("Audio/equip.mp3"))
         # If middle box is moved
         elif colour[0] == 222:
             self.models_boolean[3] = not self.models_boolean[3]
         # If the slide is being moved
         elif colour[0] == 211:
-            if self.inventory[self.inventory_choice] == 0:
-                self.models_boolean[4] = not self.models_boolean[4]
+            self.models_boolean[4] = not self.models_boolean[4]
         # If the keyhole is clicked
         elif colour[0] == 200:
             if self.inventory[self.inventory_choice] == 2:
@@ -399,7 +395,7 @@ class graphic():
                 self.pick_boolean[5] = False
                 self.inventory[self.inventory_choice] = 0
                 self.pick_boolean[7] = True
-                self.unlock_sound.play()
+                pygame.mixer.Channel(5).play(pygame.mixer.Sound("Audio/unlock.mp3"))
 
         # If the upper box is clicked
         elif colour[0] == 199:
@@ -412,7 +408,7 @@ class graphic():
                     self.models_boolean[8] = not self.models_boolean[8]
             else:
                 self.game_finished = True
-                self.gamecomplete_sound.play()
+                pygame.mixer.Channel(6).play(pygame.mixer.Sound("Audio/GameComplete.mp3"))
 
 
 

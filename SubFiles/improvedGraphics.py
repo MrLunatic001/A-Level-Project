@@ -26,10 +26,10 @@ class graphic():
         self.inventory = [0, 0, 0]
         self.game_finished = False
         self.pick_boolean = [True, False, False, False, False]
-        self.equip_sound = pygame.mixer.Sound("Audio/equip.mp3")
-        self.lock_sound = pygame.mixer.Sound("Audio/lock.mp3")
-        self.lock_sound.set_volume(0.3)
-        self.equip_sound.set_volume(0.5)
+
+
+        pygame.mixer.Channel(3).set_volume(0.3)
+        pygame.mixer.Channel(4).set_volume(0.3)
 
         # Boot up the graphic procedures
         self.compile_shader()
@@ -295,15 +295,15 @@ class graphic():
     def create_object(self):
         self.texture = glGenTextures(9)
 
-        self.make_object("Objects/hammer.obj", "Textures/ocean.png", [11, -25, 35])
+        self.make_object("Objects/hammer.obj", "Textures/hammer.jpg", [11, -25, 35])
         self.make_object("Objects/lock.obj", "Textures/lock.jpg", [11, -25, 35])
-        self.make_object("Objects/flap.obj", "Textures/flap.jpg", [11, -25, 34.99])
-        self.make_object("Objects/box_upper.obj", "Textures/box.jpg", [11, -25, 35])
+        self.make_object("Objects/flap.obj", "Textures/table.png", [11, -25, 34.99])
+        self.make_object("Objects/box_upper.obj", "Textures/chest.jpg", [11, -25, 35])
         self.make_object("Objects/puzzlePreview.obj", "Textures/rosewood.jpg", [11, -25, 35])
         self.make_object("Objects/Room.obj", "Textures/table.jpg", [0, 8, 50])
-        self.make_object("Objects/floor.obj", "Textures/Brick_Block.png", [2, -1, 10])
-        self.make_object("Objects/Table.obj", "Textures/wallpaper.jpg", [11, -25, 35])
-        self.make_object("Objects/box_bottom.obj", "Textures/box.jpg", [11, -25, 35])
+        self.make_object("Objects/floor.obj", "Textures/carpet.png", [2, -1, 13])
+        self.make_object("Objects/Table.obj", "Textures/table.jpg", [11, -25, 35])
+        self.make_object("Objects/box_bottom.obj", "Textures/chest.jpg", [11, -25, 35])
 
 
 
@@ -333,14 +333,15 @@ class graphic():
             self.models_boolean[0] = not self.models_boolean[0]
             self.inventory[1] = 1
             self.pick_boolean[1] = True
-            self.equip_sound.play()
+            pygame.mixer.Channel(3).play(pygame.mixer.Sound("Audio/equip.mp3"))
+
 
         # If inventory is hammer and clicked on lock:
         elif colour[0] == 244:
             if self.inventory[self.inventory_choice] == 1:
                 self.models_boolean[1] = not self.models_boolean[1]
                 self.pick_boolean[2] = True
-                self.lock_sound.play()
+                pygame.mixer.Channel(4).play(pygame.mixer.Sound("Audio/lock.mp3"))
         # If flap is being lifted:
         elif colour[0] == 233:
             self.models_boolean[2] = not self.models_boolean[2]
