@@ -338,7 +338,7 @@ class graphic():
         self.make_object("Objects/key.obj", "Textures/flap.jpg", [11, -25, 35])
         self.make_object("Objects/middle_puzzle.obj", "Textures/rosewood.jpg", [11, -25, 35])
         self.make_object("Objects/key_slide.obj", "Textures/rosewood.jpg", [11, -25, 35])
-        self.make_object("Objects/key_plane.obj", "Textures/wallpaper.jpg", [11, -25, 35])
+        self.make_object("Objects/key_plane.obj", "Textures/wallpaper.png", [11, -25, 35])
         self.make_object("Objects/inserted_key.obj", "Textures/flap.jpg", [11, -25, 35])
         self.make_object("Objects/upper_puzzle.obj", "Textures/rosewood.jpg", [11, -25, 35])
         self.make_object("Objects/book.obj", "Textures/book.jpg", [11, -25, 35])

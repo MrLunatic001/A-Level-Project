@@ -75,7 +75,9 @@ class game:
         pygame.mixer.set_num_channels(7)
         pygame.mixer.Channel(0).play(pygame.mixer.Sound("Audio/background.mp3"), -1)
         pygame.mixer.Channel(1).play(pygame.mixer.Sound("Audio/soundtrack.mp3"), -1)
+        pygame.mixer.Channel(2).play(pygame.mixer.Sound("Audio/walk.mp3"), -1)
         pygame.mixer.Channel(1).set_volume(0.3)
+        pygame.mixer.Channel(2).pause()
 
         play = False
 
@@ -119,9 +121,9 @@ class game:
                 pygame.K_s]:
                 if not play:
                     play = True
-                    pygame.mixer.Channel(2).play(pygame.mixer.Sound("Audio/walk.mp3"), -1)
+                    pygame.mixer.Channel(2).unpause()
             else:
-                pygame.mixer.Channel(2).stop()
+                pygame.mixer.Channel(2).pause()
                 play = False
 
             if click:
