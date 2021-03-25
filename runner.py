@@ -594,7 +594,7 @@ def help_page(width, height):
             "Use WASD to move around. w - forward, s - backward, a - left, d - right, e - inventory.  ",
             True, SAPPHIRE)
         welcome_message_two = font.render(
-            "Click on objects to rotate them.",
+            "CLICK on objects to rotate/ move them.",
             True, SAPPHIRE)
         welcome_message_three = font.render("Press escape to pause the game", True, SAPPHIRE)
         last_welcome_message = font.render("Equip items in the inventory by pressing 1,2,3", True, SAPPHIRE)
