@@ -1,13 +1,17 @@
 # Run this file to run the game
 # Use the mouse to look around. Click on the objects to rotate them.
 import os
-
-# Set the windows position
-os.environ['SDL_VIDEO_WINDOW_POS'] = '400, 200'
 import pygame
 from OpenGL.GL import *
-from SubFiles import improvedGraphics, level2Graphics
+from SubFiles import level1Graphics, level2Graphics
 import sys
+
+pygame.init()
+resolution = pygame.display.Info()
+screen_size = str(resolution.current_w / 2) + str(resolution.current_h / 2)
+# Set the windows position
+os.environ['SDL_VIDEO_WINDOW_POS'] = screen_size
+
 
 
 class button():
@@ -62,7 +66,7 @@ class game:
         self.width = width
         self.height = height
         self.inventory_choice = 0
-        self.new_graphic_settings = improvedGraphics.graphic(width, height, self.inventory_choice)
+        self.new_graphic_settings = level1Graphics.graphic(width, height, self.inventory_choice)
         self.level_counter = 0
 
         self.clock = pygame.time.Clock()
@@ -273,7 +277,7 @@ class game:
         welcome_message_one = font.render("Thank you for playing.", True, BROWN)
         welcome_message_two = font.render("I hope you enjoyed playing this game.", True, BROWN)
 
-        quit = button(GRAPEFRUIT, width / 2 * 0.8, height / 2 * 1.7, 250, 75, "quit")
+        quit = button(GRAPEFRUIT, width / 2 * 0.8, height / 2 * 1.7, 250, 75, "Quit")
         menu = button(CORALBLUE, width / 2 * 0.8, height / 2 * 1.4, 250, 75, "Main Menu")
         done = False
 
@@ -405,7 +409,7 @@ class game:
 
         self.screen = pygame.display.set_mode((self.width, self.height), pygame.OPENGL | pygame.DOUBLEBUF)
         if level == 0:
-            self.new_graphic_settings = improvedGraphics.graphic(self.width, self.height, self.inventory_choice)
+            self.new_graphic_settings = level1Graphics.graphic(self.width, self.height, self.inventory_choice)
 
         elif level == 1:
             self.new_graphic_settings = level2Graphics.graphic(self.width, self.height, self.inventory_choice)
@@ -429,7 +433,6 @@ class game:
 
 
 def start():
-    pygame.init()
     done = False
     width = 1280
     height = 720
