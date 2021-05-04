@@ -16,6 +16,7 @@ class graphic():
         self.first_mouse = True
         self.models = []
         self.inventory_models = []
+        self.noclip = False
         self.inventory_choice = choice
         self.models_boolean = []
         self.object_locations = []
@@ -286,13 +287,13 @@ class graphic():
     def player_move(self, keys_pressed):
         self.keys_pressed = keys_pressed
         if keys_pressed[pygame.K_w]:
-            self.cam.process_keyboard("FORWARD", 0.2)
+            self.cam.process_keyboard("FORWARD", 0.2, self.noclip)
         if keys_pressed[pygame.K_a]:
-            self.cam.process_keyboard("LEFT", 0.2)
+            self.cam.process_keyboard("LEFT", 0.2, self.noclip)
         if keys_pressed[pygame.K_s]:
-            self.cam.process_keyboard("BACKWARD", 0.2)
+            self.cam.process_keyboard("BACKWARD", 0.2, self.noclip)
         if keys_pressed[pygame.K_d]:
-            self.cam.process_keyboard("RIGHT", 0.2)
+            self.cam.process_keyboard("RIGHT", 0.2, self.noclip)
 
         # Move camera
 

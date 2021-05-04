@@ -101,6 +101,8 @@ class game:
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_e:
                     w, h = pygame.display.get_surface().get_size()
                     self.inventory(w, h, self.new_graphic_settings.get_state())
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_n:
+                    self.new_graphic_settings.noclip = not self.new_graphic_settings.noclip
 
             # Checks if level is finished
             if self.new_graphic_settings.checkwin():

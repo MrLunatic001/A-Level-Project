@@ -8,7 +8,7 @@ class Camera:
         self.camera_front = Vector3([0.0, 0.0, -1.0])
         self.camera_up = Vector3([0.0, 1.0, 0.0])
         self.camera_right = Vector3([1.0, 0.0, 0.0])
-
+        self.noclip = False
         self.mouse_sensitivity = 0.25
         self.jaw = -90
         self.pitch = 0
@@ -49,7 +49,8 @@ class Camera:
         self.camera_up = vector.normalise(vector3.cross(self.camera_right, self.camera_front))
 
     # Camera method for the WASD movement
-    def process_keyboard(self, direction, velocity):
+    def process_keyboard(self, direction, velocity, noclip):
+        self.noclip = noclip
         future_pos = copy.deepcopy(self.camera_pos)
         if direction == "FORWARD":
             future_pos += self.camera_move * velocity
@@ -60,13 +61,23 @@ class Camera:
         if direction == "RIGHT":
             future_pos += self.camera_right * velocity
 
-        if 18.9 >= future_pos[0] >= -15 and 29.8 >= future_pos[2] >= -5.525:
+        if not self.noclip:
+            if 18.9 >= future_pos[0] >= -15 and 29.8 >= future_pos[2] >= -5.525:
+                if direction == "FORWARD":
+                    self.camera_pos += self.camera_move * velocity
+                if direction == "BACKWARD":
+                    self.camera_pos -= self.camera_move * velocity
+                if direction == "LEFT":
+                    self.camera_pos -= self.camera_right * velocity
+                if direction == "RIGHT":
+                    self.camera_pos += self.camera_right * velocity
+        else:
             if direction == "FORWARD":
-                self.camera_pos += self.camera_move * velocity
+                self.camera_pos += self.camera_front * velocity *5
             if direction == "BACKWARD":
-                self.camera_pos -= self.camera_move * velocity
+                self.camera_pos -= self.camera_front * velocity *5
             if direction == "LEFT":
-                self.camera_pos -= self.camera_right * velocity
+                self.camera_pos -= self.camera_right * velocity *5
             if direction == "RIGHT":
-                self.camera_pos += self.camera_right * velocity
+                self.camera_pos += self.camera_right * velocity *5
 

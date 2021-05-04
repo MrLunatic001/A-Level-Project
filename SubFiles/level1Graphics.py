@@ -14,6 +14,7 @@ class graphic():
         self.width = width
         self.height = height
         self.first_mouse = True
+        self.noclip = False
         self.models = []
         self.inventory_models = []
         self.inventory_choice = choice
@@ -248,13 +249,13 @@ class graphic():
         self.keys_pressed = keys_pressed
 
         if keys_pressed[pygame.K_w]:
-            self.cam.process_keyboard("FORWARD", 0.2)
+            self.cam.process_keyboard("FORWARD", 0.2, self.noclip)
         if keys_pressed[pygame.K_a]:
-            self.cam.process_keyboard("LEFT", 0.2)
+            self.cam.process_keyboard("LEFT", 0.2, self.noclip)
         if keys_pressed[pygame.K_s]:
-            self.cam.process_keyboard("BACKWARD", 0.2)
+            self.cam.process_keyboard("BACKWARD", 0.2, self.noclip)
         if keys_pressed[pygame.K_d]:
-            self.cam.process_keyboard("RIGHT", 0.2)
+            self.cam.process_keyboard("RIGHT", 0.2, self.noclip)
 
         # Move camera
 
