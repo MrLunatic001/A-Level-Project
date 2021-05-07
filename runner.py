@@ -453,8 +453,7 @@ class game:
                     f.close()
                     f = open(path, "w")
                     for i in range(12):
-                        f.write(str(state[i])+'\n')
-                        f.write('\n')
+                        f.write(str(state[i])+'x')
 
                     f.close()
 
@@ -476,14 +475,24 @@ def start():
     quit_code = 0
 
     loadstate = False
+    state = [0,0,0,0,0,0,0,0,0,0,0,0]
+    state_counter = 0
+
 
     for root, dirs, files in os.walk(dir):
         for name in files:
             if name == "savestate.txt":
                 loadstate = True
                 f = open(path, "r")
-                state = f.read()
+                contents = f.read()
+                contents.split('x')
+                for lines in contents:
+                    print(lines)
+                    state[state_counter] = lines
+                    state_counter += 1
                 f.close()
+
+    print(state)
     if not loadstate:
 
         f = open(path, "w")
@@ -659,7 +668,3 @@ def help_page(width, height):
 
 
 start()
-f = open(path, "r")
-for lines in f:
-    print(lines)
-f.close()
