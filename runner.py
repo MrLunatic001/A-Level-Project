@@ -6,12 +6,14 @@ from OpenGL.GL import *
 from SubFiles import level1Graphics, level2Graphics
 import sys
 
+
 pygame.init()
 resolution = pygame.display.Info()
 screen_size = str(resolution.current_w / 2) + str(resolution.current_h / 2)
 # Set the windows position
 os.environ['SDL_VIDEO_WINDOW_POS'] = screen_size
-
+dir = r"C:\Users\User\Documents\GitHub\A-Level-Project\SubFiles"
+path = os.path.join(dir, "savestate.txt")
 
 
 class button():
@@ -90,6 +92,8 @@ class game:
 
             click = False
 
+
+
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     click = True
@@ -119,6 +123,8 @@ class game:
 
             self.new_graphic_settings.player_move(keys_pressed)
 
+
+
             # self.new_graphic_settings.display_instanced()
             self.new_graphic_settings.display()
 
@@ -142,6 +148,8 @@ class game:
             pygame.display.flip()
 
             self.clock.tick(60)
+            self.save_game()
+
 
         self.game_over(self.width, self.height)
 
@@ -433,6 +441,24 @@ class game:
         self.new_graphic_settings.window_resize(self.width, self.height)
         pygame.display.set_caption("Main")
 
+    def save_game(self):
+        for root, dirs, files in os.walk(dir):
+            for name in files:
+                if name == "savestate.txt":
+                    print("saving")
+                    state = self.new_graphic_settings.get_state()
+
+                    f = open(path, "w")
+                    f.truncate(0)
+                    f.close()
+                    f = open(path, "w")
+                    for i in range(12):
+                        f.write(str(state[i])+'\n')
+                        f.write('\n')
+
+                    f.close()
+
+
 
 def start():
     done = False
@@ -448,6 +474,21 @@ def start():
     about_button = button(CORALBLUE, 500, 1000 / 2 - 90, 250, 75, "About")
     help_button = button(CORALBLUE, 500, 1000 / 2 - 225, 250, 75, "Controls")
     quit_code = 0
+
+    loadstate = False
+
+    for root, dirs, files in os.walk(dir):
+        for name in files:
+            if name == "savestate.txt":
+                loadstate = True
+                f = open(path, "r")
+                state = f.read()
+                f.close()
+    if not loadstate:
+
+        f = open(path, "w")
+        f.write("null")
+        f.close()
 
     # -------- Main Program Loop -----------
     while not done:
@@ -505,6 +546,8 @@ def start():
     if quit_code == 0:  # Start button pressed
         new_game = game(1280, 720, "Game")
         new_game.run()
+
+
 
 
 def about_page():
@@ -616,3 +659,7 @@ def help_page(width, height):
 
 
 start()
+f = open(path, "r")
+for lines in f:
+    print(lines)
+f.close()

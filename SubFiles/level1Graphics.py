@@ -366,4 +366,4 @@ class graphic():
     def get_state(self):
         return self.object_locations, self.models_offset, self.models_maxoffset, self.models, self.cam.camera_pos, \
                self.cam.camera_up, self.cam.camera_front, self.cam.camera_right, self.cam.jaw, self.cam.pitch, self.inventory, \
-                self.pick_boolean
+               self.pick_boolean
