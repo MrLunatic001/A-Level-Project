@@ -28,9 +28,9 @@ class button():
     def draw(self, win, outline=(0, 0, 255)):
         # Call this method to draw the button on the screen
         if outline:
-            pygame.draw.rect(win, outline, (self.x - 2, self.y - 2, self.width + 4, self.height + 4), 0)
+            pygame.draw.rect(win, outline, (self.x - 2, self.y - 2, self.width + 4, self.height + 4), 0, border_radius=80)
 
-        pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height), 0)
+        pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height), 0, border_radius= 90)
 
         if self.text != '':
             font = pygame.font.SysFont('comicsans', 40)
@@ -72,6 +72,7 @@ class game:
         self.level_counter = 0
 
         self.clock = pygame.time.Clock()
+        self.runningtime = 0
 
     def run(self):
 
@@ -89,6 +90,7 @@ class game:
 
         # Loop
         while not done:
+
 
             click = False
 
@@ -442,6 +444,8 @@ class game:
         pygame.display.set_caption("Main")
 
     def save_game(self):
+        pass
+        """
         for root, dirs, files in os.walk(dir):
             for name in files:
                 if name == "savestate.txt":
@@ -453,9 +457,9 @@ class game:
                     f.close()
                     f = open(path, "w")
                     for i in range(12):
-                        f.write(str(state[i])+'x')
+                        f.write(str(state[i])+'_')
 
-                    f.close()
+                    f.close()"""
 
 
 
@@ -474,6 +478,7 @@ def start():
     help_button = button(CORALBLUE, 500, 1000 / 2 - 225, 250, 75, "Controls")
     quit_code = 0
 
+    """
     loadstate = False
     state = [0,0,0,0,0,0,0,0,0,0,0,0]
     state_counter = 0
@@ -482,14 +487,18 @@ def start():
     for root, dirs, files in os.walk(dir):
         for name in files:
             if name == "savestate.txt":
+                
                 loadstate = True
                 f = open(path, "r")
                 contents = f.read()
-                contents.split('x')
+                print(type(contents))
                 for lines in contents:
-                    print(lines)
-                    state[state_counter] = lines
-                    state_counter += 1
+                    for letter in lines:
+                        if letter == "0" or letter == "1" or letter == "2" or letter == "3" or letter == "4" or letter == "5" or letter == "6" or letter == "7" or letter == "8" or letter == "9" or letter == "0" or letter == ".":
+                            state[state_counter] += letter
+                        elif letter == "_":
+                            state_counter += 1
+
                 f.close()
 
     print(state)
@@ -497,7 +506,7 @@ def start():
 
         f = open(path, "w")
         f.write("null")
-        f.close()
+        f.close()"""
 
     # -------- Main Program Loop -----------
     while not done:
