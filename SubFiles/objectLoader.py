@@ -32,28 +32,6 @@ class ObjLoader:
                 ObjLoader.buffer.extend(normals[start:end])
 
 
-    @staticmethod # TODO unsorted vertex buffer for use with glDrawElements function
-    def create_unsorted_vertex_buffer(indices_data, vertices, textures, normals):
-        num_verts = len(vertices) // 3
-
-        for i1 in range(num_verts):
-            start = i1 * 3
-            end = start + 3
-            ObjLoader.buffer.extend(vertices[start:end])
-
-            for i2, data in enumerate(indices_data):
-                if i2 % 3 == 0 and data == i1:
-                    start = indices_data[i2 + 1] * 2
-                    end = start + 2
-                    ObjLoader.buffer.extend(textures[start:end])
-
-                    start = indices_data[i2 + 2] * 3
-                    end = start + 3
-                    ObjLoader.buffer.extend(normals[start:end])
-
-                    break
-
-
     @staticmethod
     def show_buffer_data(buffer):
         for i in range(len(buffer)//8):
@@ -93,9 +71,7 @@ class ObjLoader:
         if sorted:
             # use with glDrawArrays
             ObjLoader.create_sorted_vertex_buffer(all_indices, vert_coords, tex_coords, norm_coords)
-        else:
-            # use with glDrawElements
-            ObjLoader.create_unsorted_vertex_buffer(all_indices, vert_coords, tex_coords, norm_coords)
+
 
         # ObjLoader.show_buffer_data(ObjLoader.buffer)
 
