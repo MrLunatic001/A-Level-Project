@@ -25,11 +25,13 @@ class ProjectionViewer:
         self.height = height
         self.screen = pygame.display.set_mode((width, height))
         pygame.display.set_caption('Wireframe Display')
+        # Dark blue background
         self.background = (10, 10, 50)
-
         self.wireframes = {}
+        # Cube will be displayed
         self.displayNodes = True
         self.displayEdges = True
+        # White colour for nodes/ edges
         self.nodeColour = (255, 255, 255)
         self.edgeColour = (200, 200, 200)
         self.nodeRadius = 4
@@ -50,6 +52,7 @@ class ProjectionViewer:
             keys_pressed = pygame.key.get_pressed()
             for key in key_to_function.keys():
                 if keys_pressed[key]:
+                    # Rotates cube if specific key is pressed
                     key_to_function[key](self)
             self.display()
             pygame.display.flip()
@@ -60,7 +63,9 @@ class ProjectionViewer:
         self.screen.fill(self.background)
 
         for wireframe in self.wireframes.values():
+            # if user wants edges to be displayed
             if self.displayEdges:
+                # Draw a line between 2 nodes in the node list
                 for n1, n2 in wireframe.edges:
                     pygame.draw.aaline(self.screen, self.edgeColour, wireframe.nodes[n1][:2], wireframe.nodes[n2][:2],
                                        1)

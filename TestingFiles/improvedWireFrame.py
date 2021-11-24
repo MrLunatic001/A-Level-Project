@@ -45,6 +45,7 @@ class Wireframe:
 
     def rotate(self, center, matrix):
         for i, node in enumerate(self.nodes):
+            # Multiply rotation matrix and node position to create a rotated coordinate for every node
             self.nodes[i] = center + numpy.matmul(matrix, node - center)
 
     def translationMatrix(self, dx, dy, dz):

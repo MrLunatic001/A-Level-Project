@@ -1,23 +1,30 @@
 import math
 class Node:
+    # Constructor
     def __init__(self, coordinates):
+        # Sets x, y, z of node from the coordinates passed in
         self.x = coordinates[0]
         self.y = coordinates[1]
         self.z = coordinates[2]
 
 
 class Edge:
+    # Constructor
     def __init__(self, start, stop):
+        # Sets the coordinates of where the edge starts and stops
         self.start = start
         self.stop = stop
 
 
 class Wireframe:
+    # Constructor
     def __init__(self):
+        # Stores the objects nodes and edges in an array
         self.nodes = []
         self.edges = []
 
     def addNodes(self, nodeList):
+        # Takes in a list of nodes and add it to the object's node list
         for node in nodeList:
             self.nodes.append(Node(node))
 
@@ -65,14 +72,17 @@ class Wireframe:
         return (meanX, meanY, meanZ)
 
     def rotateZ(self, cx, cy, cz, radians):
+        # Takes in the coordinates offset required to rotate cube
+        # Rotates every node in node list using trig
         for node in self.nodes:
+            # Calculates new offset for each node
             x = node.x - cx
             y = node.y - cy
             d = math.hypot(y, x)
             theta = math.atan2(y, x) + radians
             node.x = cx + d * math.cos(theta)
             node.y = cy + d * math.sin(theta)
-
+# Same concept but rotations in different axis
     def rotateX(self, cx, cy, cz, radians):
         for node in self.nodes:
             y = node.y - cy

@@ -176,14 +176,6 @@ class game:
                     mouse_position = pygame.mouse.get_pos()
                     if continue_button.isOver(mouse_position):
                         done = True
-                if event.type == pygame.KEYDOWN:
-                    # Chooses inventory slot
-                    if event.key == pygame.K_1:
-                        self.inventory_choice = 0
-                    elif event.key == pygame.K_2:
-                        self.inventory_choice = 1
-                    elif event.key == pygame.K_3:
-                        self.inventory_choice = 2
 
             # --- Game logic should go here
             mouse_position = pygame.mouse.get_pos()
